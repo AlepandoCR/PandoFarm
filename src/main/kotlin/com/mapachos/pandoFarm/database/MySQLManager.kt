@@ -1,15 +1,15 @@
-package gg.cloudworld.map.database
+package com.mapachos.pandoFarm.database
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import gg.cloudworld.map.MAP
-import gg.cloudworld.map.data.PlayerDto
-import gg.cloudworld.map.database.serialization.PlayerDtoTypeAdapter
+import com.mapachos.pandoFarm.PandoFarm
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
-class MySQLManager(private val plugin: MAP) {
+class MySQLManager(private val plugin: PandoFarm) {
+
+    val gson: Gson = GsonBuilder().serializeNulls().create()
 
     private val config = plugin.config
     private val host: String = config.getString("mysql.host")!!
@@ -20,9 +20,6 @@ class MySQLManager(private val plugin: MAP) {
     private val useSSL: Boolean = config.getBoolean("mysql.useSSL")
 
     private var connection: Connection? = null
-    val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(PlayerDto::class.java, PlayerDtoTypeAdapter())
-        .create()
 
     fun connect() {
         if (connection != null && !connection!!.isClosed) return

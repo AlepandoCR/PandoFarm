@@ -1,4 +1,4 @@
-package model.util
+package com.mapachos.pandoFarm.model.util
 
 import kr.toxicity.model.api.BetterModel
 import kr.toxicity.model.api.data.renderer.ModelRenderer
@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity
 object RendererSupplier {
     private val betterModel = BetterModel.plugin()
     fun get(name: String): ModelRenderer{
-        val renderer = betterModel.modelManager().renderer(name) ?: throw NullPointerException("model name is not registered")
+        val renderer = betterModel.modelManager().model(name) ?: throw NullPointerException("model name is not registered")
         return renderer
     }
 
@@ -17,6 +17,5 @@ object RendererSupplier {
         attribute?.let {
             it.baseValue = value
         }
-
     }
 }

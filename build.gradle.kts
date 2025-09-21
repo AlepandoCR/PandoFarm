@@ -1,7 +1,10 @@
 plugins {
-    kotlin("jvm") version "2.2.20"
-    id("com.gradleup.shadow") version "8.3.0"
+    kotlin("jvm") version "2.1.21"
+    `java-library`
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
     id("xyz.jpenilla.run-paper") version "2.3.1"
+
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.mapachos"
@@ -15,33 +18,29 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    compileOnly("io.github.toxicity188:bettermodel:1.12.1")
+    implementation(kotlin("reflect"))
+    implementation("com.google.code.gson:gson:2.11.0")
+}
+
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 tasks {
-    runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.21")
+    shadowJar {
+        archiveClassifier.set("")
+        mergeServiceFiles()
     }
-}
 
-val targetJavaVersion = 21
-kotlin {
-    jvmToolchain(targetJavaVersion)
-}
 
-tasks.build {
-    dependsOn("shadowJar")
-}
-
-tasks.processResources {
-    val props = mapOf("version" to version)
-    inputs.properties(props)
-    filteringCharset = "UTF-8"
-    filesMatching("plugin.yml") {
-        expand(props)
+    build {
+        dependsOn(shadowJar)
+    }
+    runServer {
+        minecraftVersion("1.21.8")
     }
 }

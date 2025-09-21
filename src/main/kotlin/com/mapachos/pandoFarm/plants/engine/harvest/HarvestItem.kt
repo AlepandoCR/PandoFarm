@@ -1,41 +1,39 @@
-package com.mapachos.gachapon.engine.item
+package com.mapachos.pandoFarm.plants.engine.harvest
 
 import com.google.common.collect.Multimap
-import com.mapachos.gachapon.quality.GachaponQuality
+import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffectType
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.components.CustomModelDataComponent
 import org.bukkit.persistence.PersistentDataContainer
 
-abstract class GachaponItem {
+class HarvestItem<M: Material>(val harvest: Harvest<out HarvestType, out HarvestEffectType, M>) {
 
     private lateinit var serializedItem: ByteArray
 
-    protected abstract fun material(): Material
+    private fun lore(): List<Component>{
+        TODO("Display the harvest data in the lore")
+        return listOf()
+    }
 
-    protected abstract fun quality(): GachaponQuality
+    private fun persistentDataContainer(persistentDataContainer: PersistentDataContainer){
+        TODO("Serialize the harvest data into the persistent data container")
+    }
 
-    protected abstract fun name(): Component
+    private fun customModelDataComponent(customModelDataComponent: CustomModelDataComponent){
+        customModelDataComponent.strings.add(harvest.harvestType.customModelComponentString)
+    }
 
-    protected abstract fun lore(): List<Component>
+    private fun attributeModifiers(map: Multimap<Attribute, AttributeModifier>?){
 
-    protected abstract fun persistentDataContainer(persistentDataContainer: PersistentDataContainer)
-
-    protected abstract fun enchantments(): Map<Enchantment, Int>
-
-    protected abstract fun customModelDataComponent(customModelDataComponent: CustomModelDataComponent)
-
-    protected abstract fun attributeModifiers(map: Multimap<Attribute, AttributeModifier>?)
-
-    protected abstract fun addAttributeModifier(): Map<Attribute,AttributeModifier>
+    }
 
     fun buildItem(): ItemStack{
-        val item = ItemStack(material())
+        val item = ItemStack(harvest.material)
         val meta = item.itemMeta ?: return item
         decorators(meta)
         data(meta)
@@ -45,18 +43,13 @@ abstract class GachaponItem {
 
     fun data(meta: ItemMeta) {
         persistentDataContainer(meta.persistentDataContainer)
-        enchantments().forEach { enchantment ->
-            meta.addEnchant(enchantment.key, enchantment.value, true)
-        }
         customModelDataComponent(meta.customModelDataComponent)
-        addAttributeModifier().forEach { meta.addAttributeModifier(it.key,it.value) }
         attributeModifiers(meta.attributeModifiers)
     }
 
     private fun decorators(meta: ItemMeta) {
-        meta.displayName(name())
+        meta.displayName(harvest.harvestType.componentName)
         meta.lore(lore())
-        meta.lore()?.add(Component.text(quality().name).color(quality().color))
     }
 
     fun bytes(): ByteArray{

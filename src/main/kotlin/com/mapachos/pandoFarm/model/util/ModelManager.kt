@@ -1,6 +1,6 @@
-package model.util
+package com.mapachos.pandoFarm.model.util
 
-import model.Model
+import com.mapachos.pandoFarm.model.Model
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity

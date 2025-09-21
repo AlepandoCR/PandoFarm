@@ -1,8 +1,8 @@
-package gg.cloudworld.map.database.table
+package com.mapachos.pandoFarm.database.table
 
 import com.google.gson.reflect.TypeToken
-import gg.cloudworld.map.database.MySQLManager
-import gg.cloudworld.map.util.async
+import com.mapachos.pandoFarm.database.MySQLManager
+import com.mapachos.pandoFarm.util.async
 import java.lang.reflect.Type
 import java.util.*
 import kotlin.reflect.KClass

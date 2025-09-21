@@ -1,5 +1,5 @@
-package com.mapachos.pandoFarm.plants.data
+package com.mapachos.pandoFarm.database.data
 
 import java.io.Serializable
 
-interface Data : Serializable 
+interface Dto : Serializable

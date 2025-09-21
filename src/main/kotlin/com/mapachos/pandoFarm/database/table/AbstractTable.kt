@@ -1,6 +1,6 @@
-package gg.cloudworld.map.database.table
+package com.mapachos.pandoFarm.database.table
 
-import gg.cloudworld.map.database.MySQLManager
+import com.mapachos.pandoFarm.database.MySQLManager
 import java.sql.Connection
 
 abstract class AbstractTable(protected val mysql: MySQLManager) {

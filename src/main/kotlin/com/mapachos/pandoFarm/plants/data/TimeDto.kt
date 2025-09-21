@@ -1,4 +1,8 @@
 package com.mapachos.pandoFarm.plants.data
 
-class TimeDto {
+data class TimeDto(
+    val hour: Int,
+    val minute: Int,
+    val second: Int,
+) {
 }

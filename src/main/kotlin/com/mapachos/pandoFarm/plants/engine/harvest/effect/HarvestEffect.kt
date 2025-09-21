@@ -1,4 +1,8 @@
 package com.mapachos.pandoFarm.plants.engine.harvest.effect
 
-class HarvestEffect {
+import org.bukkit.entity.Player
+
+interface HarvestEffect {
+
+    fun effect(player: Player, harvestQuality: Int)
 }

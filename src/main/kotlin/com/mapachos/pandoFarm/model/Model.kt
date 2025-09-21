@@ -1,12 +1,12 @@
-package model
+package com.mapachos.pandoFarm.model
 
 import kr.toxicity.model.api.bone.RenderedBone
 import kr.toxicity.model.api.tracker.EntityHideOption
 import kr.toxicity.model.api.tracker.ModelScaler
-import model.preset.ModelPreset
-import model.util.ModelManager
-import model.util.RendererSupplier
-import model.util.RendererSupplier.resize
+import com.mapachos.pandoFarm.model.preset.ModelPreset
+import com.mapachos.pandoFarm.model.util.ModelManager
+import com.mapachos.pandoFarm.model.util.RendererSupplier
+import com.mapachos.pandoFarm.model.util.RendererSupplier.resize
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Display.Billboard
@@ -129,7 +129,7 @@ class Model<T : Entity>(
 
     companion object{
         fun <A: Entity>fromPreset(preset: ModelPreset<A>, world: World, location: Location): Model<A>{
-            return preset.buildModel(world,location)
+            return preset.buildModel(location)
         }
     }
 }

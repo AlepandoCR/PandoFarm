@@ -1,4 +1,10 @@
 package com.mapachos.pandoFarm.plants.engine.harvest.effect.types
 
-object NoneHarvestEffect {
+import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffect
+import org.bukkit.entity.Player
+
+object NoneHarvestEffect: HarvestEffect {
+    override fun effect(player: Player, harvestQuality: Int) {
+        // No effect
+    }
 }

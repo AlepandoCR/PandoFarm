@@ -1,4 +1,4 @@
-package gg.cloudworld.map.database.table
+package com.mapachos.pandoFarm.database.table
 
 import java.util.UUID
 

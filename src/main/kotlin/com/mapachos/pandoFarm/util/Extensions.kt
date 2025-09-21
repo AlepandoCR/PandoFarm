@@ -1,17 +1,13 @@
-package gg.cloudworld.map.util
+package com.mapachos.pandoFarm.util
 
-import gg.cloudworld.map.MAP
-import gg.cloudworld.map.analytics.AnalysisRequest
-import gg.cloudworld.map.analytics.util.PlayerFilterLogic
-import gg.cloudworld.map.data.PlayerDto
-import gg.cloudworld.map.data.SaleDto
+
+import com.mapachos.pandoFarm.PandoFarm
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
-import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataContainer
@@ -19,11 +15,8 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
-import org.bukkit.util.Transformation
-import org.joml.Quaternionf
-import java.util.UUID
 
-private val plugin: JavaPlugin = JavaPlugin.getPlugin(MAP::class.java)
+private val plugin: JavaPlugin = JavaPlugin.getPlugin(PandoFarm::class.java)
 
 fun async(handler: () -> Unit) {
     Bukkit.getScheduler().runTaskAsynchronously(plugin, handler)
@@ -102,23 +95,4 @@ fun Color.toNamedTextColor(): NamedTextColor {
     return NamedTextColor.nearestTo(adventureTextColor)
 }
 
-fun List<SaleDto>.filterByTime(request: AnalysisRequest): List<SaleDto> {
-    return this.filter { sale ->
-        (request.startTime == null || sale.time.toZonedDateTime() >= request.startTime.toZonedDateTime()) &&
-                (request.endTime == null || sale.time.toZonedDateTime() <= request.endTime.toZonedDateTime())
-    }
-}
-
-fun List<SaleDto>.filterByPlayer(request: AnalysisRequest, logic: PlayerFilterLogic): List<SaleDto> {
-    if (request.players.isEmpty()) return this
-    return this.filter { sale ->
-        when (logic) {
-            PlayerFilterLogic.ANY -> sale.seller in request.players || sale.buyer in request.players
-            PlayerFilterLogic.SELLER_ONLY -> sale.seller in request.players
-            PlayerFilterLogic.BUYER_ONLY -> sale.buyer in request.players
-        }
-    }
-}
-
-fun UUID.toPlayerDto(): PlayerDto = PlayerDto(this)
 

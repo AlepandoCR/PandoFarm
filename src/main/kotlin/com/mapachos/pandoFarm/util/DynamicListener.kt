@@ -1,8 +1,10 @@
-package com.mapachos.gachapon.util
+package com.mapachos.pandoFarm.util
 
+import com.mapachos.pandoFarm.PandoFarm
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
@@ -11,9 +13,9 @@ import org.bukkit.scheduler.BukkitRunnable
  *
  * @property plugin The plugin instance used for registering the listener.
  */
-class DynamicListener(
-    private val plugin: Plugin
-) {
+class DynamicListener
+{
+    private val plugin = JavaPlugin.getPlugin(PandoFarm::class.java)
     private var activeListener = false
     private var listener: Listener? = null
 

@@ -1,17 +1,17 @@
-package model.preset
+package com.mapachos.pandoFarm.model.preset
 
-import model.Model
-import model.util.ModelManager.buildModel
+import com.mapachos.pandoFarm.model.Model
+import com.mapachos.pandoFarm.model.util.ModelManager.buildModel
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.entity.Entity
 
-interface ModelPreset<T: Entity> {
-    fun buildModel(world: World, location: Location): Model<T>{
+interface ModelPreset<E: Entity> {
+    fun buildModel(location: Location): Model<E>{
+        val world = location.world
         return classT().buildModel(modelId(),world,location)
     }
 
-    fun classT(): Class<T>
+    fun classT(): Class<E>
 
     fun modelId(): String
 }
