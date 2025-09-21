@@ -1,0 +1,4 @@
+name: PandoFarm
+version: '1.0.0'
+main: com.mapachos.pandoFarm.PandoFarm
+api-version: '1.21'
