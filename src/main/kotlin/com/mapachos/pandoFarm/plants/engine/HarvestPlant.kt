@@ -3,13 +3,12 @@ package com.mapachos.pandoFarm.plants.engine
 import com.mapachos.pandoFarm.model.preset.ModelPreset
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
 import com.mapachos.pandoFarm.plants.engine.harvest.HarvestType
-import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffectType
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Entity
-import java.util.UUID
+import java.util.*
 
-abstract class HarvestPlant<HI: InteractionMethod, E: Entity, I: InteractionMethod,HT: HarvestType, H: Harvest<HT, out HarvestEffectType, out Material>>(
+abstract class HarvestPlant<HI: InteractionMethod, E: Entity, I: InteractionMethod,HT: HarvestType, H: Harvest<HT>>(
     location: Location,
     age: Long,
     uniqueIdentifier: UUID,

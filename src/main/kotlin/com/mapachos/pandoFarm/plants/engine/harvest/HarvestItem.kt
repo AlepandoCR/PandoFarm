@@ -1,9 +1,7 @@
 package com.mapachos.pandoFarm.plants.engine.harvest
 
 import com.google.common.collect.Multimap
-import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffectType
 import net.kyori.adventure.text.Component
-import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemStack
@@ -11,7 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.components.CustomModelDataComponent
 import org.bukkit.persistence.PersistentDataContainer
 
-class HarvestItem<M: Material>(val harvest: Harvest<out HarvestType, out HarvestEffectType, M>) {
+class HarvestItem(val harvest: Harvest<out HarvestType>) {
 
     private lateinit var serializedItem: ByteArray
 
@@ -33,7 +31,7 @@ class HarvestItem<M: Material>(val harvest: Harvest<out HarvestType, out Harvest
     }
 
     fun buildItem(): ItemStack{
-        val item = ItemStack(harvest.material)
+        val item = ItemStack(harvest.harvestType.material)
         val meta = item.itemMeta ?: return item
         decorators(meta)
         data(meta)

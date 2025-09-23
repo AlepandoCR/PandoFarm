@@ -47,8 +47,8 @@ class Model<T : Entity>(
         tracker.scaler(ModelScaler.value(originalModelScale))
     }
 
-    fun scaleWithEntity(value: Float){
-        if(entity !is LivingEntity) scale(value)
+    private fun scaleWithEntity(value: Float){
+        if(entity !is LivingEntity) return
 
         val livingEntity = entity as LivingEntity
 

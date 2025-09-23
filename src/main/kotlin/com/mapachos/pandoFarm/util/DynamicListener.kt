@@ -117,4 +117,9 @@ class DynamicListener
             }
         }.runTaskLater(plugin, time)
     }
+
+    fun close(){
+        unRegisterListener()
+        listener = null
+    }
 }

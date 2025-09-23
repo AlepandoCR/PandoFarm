@@ -1,19 +1,21 @@
 package com.mapachos.pandoFarm.plants.engine.harvest
 
-import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffectType
-import org.bukkit.Material
+import com.mapachos.pandoFarm.plants.data.HarvestDto
 import org.bukkit.entity.Player
 
-abstract class Harvest<H: HarvestType, E: HarvestEffectType, M: Material>(
+abstract class Harvest<H: HarvestType>(
     private var pQuality: Int,
-    val harvestType: H,
-    val harvestEffectType: E,
-    val material: M
+    val harvestType: H
 ) {
+    val material = harvestType.material
+    val harvestItem = HarvestItem(this)
+
     private val maxQuality = 20
 
     init {
-        if (pQuality > maxQuality) {pQuality = maxQuality}
+        if (pQuality !in 0..maxQuality) {
+            pQuality = maxQuality
+        }
     }
 
     fun getQuality(): Int {
@@ -21,6 +23,14 @@ abstract class Harvest<H: HarvestType, E: HarvestEffectType, M: Material>(
     }
 
     fun effect(player: Player) {
-        harvestEffectType.harvestEffect.effect(player, pQuality)
+        harvestType.harvestEffectType.harvestEffect.effect(player, pQuality)
+    }
+
+    fun toDto(): HarvestDto {
+        return HarvestDto(
+            material.name,
+            pQuality,
+            harvestType.name
+        )
     }
 }

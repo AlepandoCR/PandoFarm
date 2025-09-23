@@ -3,6 +3,7 @@ package com.mapachos.pandoFarm.model.util
 import kr.toxicity.model.api.BetterModel
 import kr.toxicity.model.api.data.renderer.ModelRenderer
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 
 object RendererSupplier {

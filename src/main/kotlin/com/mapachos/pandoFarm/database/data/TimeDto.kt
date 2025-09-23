@@ -1,4 +1,4 @@
-package com.mapachos.pandoFarm.plants.data
+package com.mapachos.pandoFarm.database.data
 
 data class TimeDto(
     val hour: Int,
