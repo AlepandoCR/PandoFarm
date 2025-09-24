@@ -2,7 +2,6 @@ package com.mapachos.pandoFarm.model.util
 
 import com.mapachos.pandoFarm.model.Model
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.entity.Entity
 
 object ModelManager {
@@ -12,11 +11,11 @@ object ModelManager {
         repo.addAll(model)
     }
 
-    inline fun <reified T : Entity> modelOf(name: String, world: World, location: Location): Model<T> {
+    inline fun <reified T : Entity> modelOf(name: String, location: Location): Model<T> {
         return Model(name, location, T::class.java)
     }
 
-    fun <T: Entity> Class<T>.buildModel(name: String, world: World, location: Location): Model<T> {
+    fun <T: Entity> Class<T>.buildModel(name: String, location: Location): Model<T> {
         return Model(name, location, this)
     }
 
