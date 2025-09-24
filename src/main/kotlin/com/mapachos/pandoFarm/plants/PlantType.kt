@@ -1,4 +1,7 @@
 package com.mapachos.pandoFarm.plants
 
-enum class PlantType {
+import com.mapachos.pandoFarm.plants.engine.InteractionMethod
+
+enum class PlantType(val harvestMethod: InteractionMethod, val interactionMethod: InteractionMethod) {
+    TOMATO_PLANT(InteractionMethod.DAMAGE, InteractionMethod.INTERACT),
 }

@@ -17,11 +17,11 @@ import java.util.function.Predicate
 
 class Model<T : Entity>(
     private val name: String,
-    private val world: World,
     private val location: Location,
     private val entityClass: Class<T>
 ) {
     private val renderer = RendererSupplier.get(name)
+    val world: World = location.world
     val entity: T = world.spawn(location, entityClass)
     val tracker = renderer.create(entity)
     private val originalModelScale = tracker.scaler().scale(tracker)
@@ -67,7 +67,7 @@ class Model<T : Entity>(
         tracker.damageTintValue(value)
     }
 
-    fun despawn(){
+    fun remove(){
         ModelManager.unregister(this)
         tracker.close()
         tracker.despawn()

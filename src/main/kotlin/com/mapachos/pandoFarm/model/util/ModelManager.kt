@@ -13,11 +13,11 @@ object ModelManager {
     }
 
     inline fun <reified T : Entity> modelOf(name: String, world: World, location: Location): Model<T> {
-        return Model(name, world, location, T::class.java)
+        return Model(name, location, T::class.java)
     }
 
     fun <T: Entity> Class<T>.buildModel(name: String, world: World, location: Location): Model<T> {
-        return Model(name, world, location, this)
+        return Model(name, location, this)
     }
 
     fun Entity.getModel(): Model<out Entity>?{

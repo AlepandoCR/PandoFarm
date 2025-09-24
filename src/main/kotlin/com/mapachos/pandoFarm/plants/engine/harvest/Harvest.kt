@@ -30,7 +30,15 @@ abstract class Harvest<H: HarvestType>(
         return HarvestDto(
             material.name,
             pQuality,
-            harvestType.name
+            harvestType.toDto()
         )
+    }
+
+    fun load(){
+
+    }
+
+    fun save(){
+
     }
 }

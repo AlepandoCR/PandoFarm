@@ -7,4 +7,8 @@ object NoneHarvestEffect: HarvestEffect {
     override fun effect(player: Player, harvestQuality: Int) {
         // No effect
     }
+
+    override fun description(): String {
+        return "No effect"
+    }
 }

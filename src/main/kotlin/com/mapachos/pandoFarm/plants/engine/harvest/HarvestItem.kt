@@ -12,14 +12,17 @@ import org.bukkit.persistence.PersistentDataContainer
 class HarvestItem(val harvest: Harvest<out HarvestType>) {
 
     private lateinit var serializedItem: ByteArray
+    val dto = harvest.toDto()
 
     private fun lore(): List<Component>{
-        TODO("Display the harvest data in the lore")
-        return listOf()
+        return listOf(
+            Component.text("Quality: ${dto.quality}"),
+            Component.text("Effect: ${dto.harvestType.effect.description}"),
+        )
     }
 
     private fun persistentDataContainer(persistentDataContainer: PersistentDataContainer){
-        TODO("Serialize the harvest data into the persistent data container")
+        dto.applyOnPersistentDataContainer(persistentDataContainer)
     }
 
     private fun customModelDataComponent(customModelDataComponent: CustomModelDataComponent){
