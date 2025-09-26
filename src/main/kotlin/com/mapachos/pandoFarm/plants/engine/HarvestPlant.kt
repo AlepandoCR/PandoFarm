@@ -6,8 +6,6 @@ import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.data.HarvestPlantDto
 import com.mapachos.pandoFarm.plants.data.PlantDto
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
-import com.mapachos.pandoFarm.plants.engine.harvest.HarvestType
-import com.mapachos.pandoFarm.plants.engine.harvest.HarvestTypeRegistry
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import java.util.*
@@ -45,8 +43,8 @@ class HarvestPlant<E: Entity>(
 
         fun load(dto: HarvestPlantDto): HarvestPlant<out Entity>? {
             val type = dto.plantType.toPlantType()
-            val harvestType = dto.harvestDto.harvestType.toHarvestType()
-            val harvest = HarvestTypeRegistry.getHarvestByType(harvestType) ?: return null
+            dto.harvestDto.harvestType.toHarvestType()
+            val harvest = dto.harvestDto.toHarvest()
             return HarvestPlant(
                 dto.location.toLocation(),
                 type,

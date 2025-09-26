@@ -3,7 +3,7 @@ package com.mapachos.pandoFarm.plants.engine.harvest
 import com.mapachos.pandoFarm.plants.data.HarvestDto
 import org.bukkit.entity.Player
 
-abstract class Harvest(
+class Harvest(
     private var pQuality: Int,
     val harvestType: HarvestType
 ) {

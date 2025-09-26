@@ -2,6 +2,7 @@ package com.mapachos.pandoFarm.plants.data
 
 import com.mapachos.pandoFarm.database.data.Dto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
+import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
@@ -9,6 +10,10 @@ data class HarvestDto(
     val quality: Int,
     val harvestType: HarvestTypeDto
 ): Dto {
+    fun toHarvest(): Harvest {
+        return Harvest(quality, harvestType.toHarvestType())
+    }
+
     override fun applyOnPersistentDataContainer(persistentDataContainer: PersistentDataContainer) {
         persistentDataContainer.set(DataNamespacedKey.QUALITY.toNamespacedKey(), PersistentDataType.INTEGER, quality)
         harvestType.applyOnPersistentDataContainer(persistentDataContainer)
