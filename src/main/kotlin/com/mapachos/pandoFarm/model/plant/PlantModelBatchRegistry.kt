@@ -23,7 +23,28 @@ object PlantModelBatchRegistry {
         return list.find { it.id == id }
     }
 
+    fun getTypedById(id: String, entityClass: Class<out Entity>): PlantModelBatch<out Entity>? {
+        val found = list.find { it.id == id } ?: return null
+        if(found.entityClass != entityClass) return null
+        return found
+    }
+
+
     fun getByEntityClass(entityClass: Class<out Entity>): PlantModelBatch<out Entity>? {
         return list.find { it.entityClass == entityClass }
+    }
+
+    fun <E: Entity>serveID(id: String, entityClass: Class<E>): PlantModelBatch<E>{
+        val modelBatch = object: PlantModelBatch<E>() {
+            override val id: String
+                get() = id
+            override val entityClass: Class<E>
+                get() = entityClass
+        }
+        if(!list.contains(modelBatch)){
+            register(modelBatch)
+        }
+
+        return modelBatch
     }
 }

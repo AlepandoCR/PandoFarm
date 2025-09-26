@@ -7,6 +7,7 @@ import org.bukkit.entity.Entity
 
 class PlantRegistry(val world: World) {
     val registry: MutableList<Plant<out Entity>> = mutableListOf()
+    val growthEngine = GrowthEngine(this)
 
     fun addPlant(plant: Plant<out Entity>) {
         registry.add(plant)

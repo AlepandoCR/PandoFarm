@@ -1,11 +1,13 @@
 package com.mapachos.pandoFarm.plants.engine
 
-import com.mapachos.pandoFarm.database.data.LocationDto.Companion.toDto
 import com.mapachos.pandoFarm.model.Model
 import com.mapachos.pandoFarm.model.plant.PlantModelBatch
+import com.mapachos.pandoFarm.model.plant.PlantModelBatchRegistry
 import com.mapachos.pandoFarm.model.preset.ModelPreset
 import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.data.PlantDto
+import com.mapachos.pandoFarm.plants.engine.event.plant.PlantGrowEvent
+import com.mapachos.pandoFarm.plants.engine.event.plant.SpawnPlantEvent
 
 import com.mapachos.pandoFarm.util.DynamicListener
 import org.bukkit.Location
@@ -18,15 +20,17 @@ import kotlin.reflect.KClass
 
 abstract class Plant<E: Entity>(
     val location: Location,
-    val plantType: PlantType,
-    private var modelBatch: PlantModelBatch<E>,
+    val plantType: PlantType<E>,
     var age: Long = 0, // In seconds
     val uniqueIdentifier: UUID = UUID.randomUUID(),
 ) {
     val dynamicListener = DynamicListener()
     val chunk = location.chunk
 
+    private var modelBatch = PlantModelBatchRegistry.serveID(plantType.modelBatch.id, plantType.modelBatch.entityClass)
+
     lateinit var model: Model<E>
+
 
     init {
         dynamicListener.setListener(listener(plantType.harvestMethod.eventClass, plantType.interactionMethod.eventClass))
@@ -47,7 +51,7 @@ abstract class Plant<E: Entity>(
         model = modelPreset.buildModel(location)
     }
 
-    fun switchModel(newPreset: ModelPreset<E>){ // for growth stages
+    fun switchModel(){ // for growth stages
         model.remove()
         model = modelPreset.buildModel(location)
     }
@@ -64,16 +68,27 @@ abstract class Plant<E: Entity>(
         return modelBatch.id
     }
 
-    abstract fun toDto(): PlantDto
+    fun remove(){
+        save()
+        model.remove()
+        dynamicListener.stop()
+    }
 
-    abstract fun onSpawn()
+    fun onSpawn(){
+        SpawnPlantEvent(this).callEvent()
+    }
+
+    abstract fun toDto(): PlantDto
 
     /**
      * Called when the plant grows to the next stage
      */
-    abstract fun grow()
+    fun grow(){
+        PlantGrowEvent(this).callEvent()
+        switchModel()
+    }
 
-    abstract fun harvest()
+    abstract fun harvest() // Only HarvestPlants use this method, but it's defined here for it to only be one listener per plant
 
     // In seconds
     abstract fun matureAge(): Long
@@ -83,11 +98,7 @@ abstract class Plant<E: Entity>(
      */
     abstract fun task()
 
-    abstract fun destroy()
-
     abstract fun save()
-
-    abstract fun load(dto: PlantDto)
 
     abstract fun interact()
 

@@ -1,6 +1,7 @@
 package com.mapachos.pandoFarm.model.plant
 
 import com.mapachos.pandoFarm.model.preset.ModelPreset
+import com.mapachos.pandoFarm.plants.data.ModelBatchDto
 import com.mapachos.pandoFarm.plants.engine.GrowthStage
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -70,5 +71,9 @@ abstract class PlantModelBatch<E: Entity> {
             GrowthStage.VEGETATIVE -> vegetativeModel(location)
             GrowthStage.MATURE -> matureModel(location)
         }
+    }
+
+    fun toDto(): ModelBatchDto{
+        return ModelBatchDto(id, entityClass.simpleName)
     }
 }

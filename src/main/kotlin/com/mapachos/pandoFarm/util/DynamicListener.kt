@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable
  */
 class DynamicListener
 {
-    private val plugin = JavaPlugin.getPlugin(PandoFarm::class.java)
+    private val plugin = PandoFarm.getInstance()
     private var activeListener = false
     private var listener: Listener? = null
 

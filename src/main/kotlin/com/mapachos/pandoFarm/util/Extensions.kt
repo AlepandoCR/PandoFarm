@@ -2,6 +2,8 @@ package com.mapachos.pandoFarm.util
 
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.yml.AutoYML
+import com.mapachos.pandoFarm.yml.DataFolder
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -15,8 +17,12 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
+import java.io.Serializable
 
-private val plugin: JavaPlugin = JavaPlugin.getPlugin(PandoFarm::class.java)
+private val plugin = PandoFarm.getInstance()
+
+inline fun <reified T: Serializable> autoYml(name: String, dataFolder: DataFolder,header: String? = null): AutoYML<T> =
+    AutoYML.create(T::class, name, dataFolder, header)
 
 fun async(handler: () -> Unit) {
     Bukkit.getScheduler().runTaskAsynchronously(plugin, handler)

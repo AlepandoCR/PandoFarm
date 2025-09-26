@@ -11,8 +11,7 @@ import java.util.*
 
 abstract class PlantDto(
     val uniqueIdentifier: UUID,
-    val plantType: String,
+    val plantType: PlantTypeDto,
     val age: Long,
     val location: LocationDto,
-    val modelBatch: String
 ): Dto

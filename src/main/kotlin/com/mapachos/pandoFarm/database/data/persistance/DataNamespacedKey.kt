@@ -18,15 +18,20 @@ enum class DataNamespacedKey(val key: String) {
     QUALITY("qualityDto"),
     UUID("uuidDto"),
     PLANT_TYPE("plantTypeDto"),
+    HARVEST_EFFECT_NAME("harvestEffectNameDto"),
     AGE("ageDto"),
-    DESCRIPTION("descriptionDto"),
+    HARVEST_EFFECT_DESCRIPTION("descriptionDto"),
     LOCATION("locationDto"),
-    HARVEST_TYPE("harvestTypeDto"),
+    HARVEST_TYPE_NAME("harvestTypeDto"),
+    HARVEST_METHOD("interactionTypeDto"),
+    INTERACTION_METHOD("harvestInteractionTypeDto"),
+    ENTITY_CLASS("entityClassDto"),
+    HARVEST_TYPE_CUSTOM_MODEL_COMPONENT_STRING("harvestTypeCustomModelComponentStringDto"),
     MODEL_BATCH("modelBatchDto");
 
 
     fun toNamespacedKey(): NamespacedKey {
-        return NamespacedKey(PandoFarm.instance, key)
+        return NamespacedKey(PandoFarm.getInstance(), key)
     }
 
     fun fromNamespacedKey(namespacedKey: NamespacedKey): DataNamespacedKey? {

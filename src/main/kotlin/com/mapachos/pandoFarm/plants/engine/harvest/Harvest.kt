@@ -3,9 +3,9 @@ package com.mapachos.pandoFarm.plants.engine.harvest
 import com.mapachos.pandoFarm.plants.data.HarvestDto
 import org.bukkit.entity.Player
 
-abstract class Harvest<H: HarvestType>(
+abstract class Harvest(
     private var pQuality: Int,
-    val harvestType: H
+    val harvestType: HarvestType
 ) {
     val material = harvestType.material
     val harvestItem = HarvestItem(this)
@@ -28,7 +28,6 @@ abstract class Harvest<H: HarvestType>(
 
     fun toDto(): HarvestDto {
         return HarvestDto(
-            material.name,
             pQuality,
             harvestType.toDto()
         )

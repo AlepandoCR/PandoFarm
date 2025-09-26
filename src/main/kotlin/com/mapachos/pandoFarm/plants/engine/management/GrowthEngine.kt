@@ -2,10 +2,9 @@ package com.mapachos.pandoFarm.plants.engine.management
 
 import com.mapachos.pandoFarm.util.timer
 import com.mapachos.pandoFarm.util.timerRunnable
-import org.bukkit.World
 import org.bukkit.scheduler.BukkitRunnable
 
-class GrowthEngine(val world: World, val plantRegistry: PlantRegistry) {
+class GrowthEngine(val plantRegistry: PlantRegistry) {
     val task: BukkitRunnable
     var ticks = 0
     init{

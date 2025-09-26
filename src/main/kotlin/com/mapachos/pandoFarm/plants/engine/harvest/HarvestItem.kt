@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.components.CustomModelDataComponent
 import org.bukkit.persistence.PersistentDataContainer
 
-class HarvestItem(val harvest: Harvest<out HarvestType>) {
+class HarvestItem(val harvest: Harvest) {
 
     private lateinit var serializedItem: ByteArray
     val dto = harvest.toDto()
@@ -49,7 +49,7 @@ class HarvestItem(val harvest: Harvest<out HarvestType>) {
     }
 
     private fun decorators(meta: ItemMeta) {
-        meta.displayName(harvest.harvestType.componentName)
+        meta.displayName(Component.text(harvest.harvestType.name))
         meta.lore(lore())
     }
 

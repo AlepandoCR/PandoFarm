@@ -23,6 +23,7 @@ dependencies {
     compileOnly("io.github.toxicity188:bettermodel:1.12.1")
     implementation(kotlin("reflect"))
     implementation("com.google.code.gson:gson:2.11.0")
+    implementation("org.yaml:snakeyaml:2.2")
 }
 
 
