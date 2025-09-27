@@ -24,7 +24,7 @@ enum class GrowthStage {
     companion object {
         fun fromPlant(plant: Plant<out Entity>): GrowthStage {
             val age = plant.age
-            val maxAge = plant.matureAge()
+            val maxAge = plant.matureAge
             return fromRange(age, maxAge)
         }
 

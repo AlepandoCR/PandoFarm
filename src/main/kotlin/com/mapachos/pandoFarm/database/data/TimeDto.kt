@@ -8,7 +8,7 @@ data class TimeDto(
     val hour: Int,
     val minute: Int,
     val second: Int,
-): Dto {
+): ContainerDto {
     override fun applyOnPersistentDataContainer(persistentDataContainer: PersistentDataContainer) {
         persistentDataContainer.set(DataNamespacedKey.HOUR.toNamespacedKey(), PersistentDataType.INTEGER, hour)
         persistentDataContainer.set(DataNamespacedKey.MINUTE.toNamespacedKey(), PersistentDataType.INTEGER, minute)

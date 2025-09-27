@@ -1,5 +1,5 @@
 
-package com.mapachos.pandoFarm.yml
+package com.mapachos.pandoFarm.util.yml
 
 import com.mapachos.pandoFarm.PandoFarm
 import org.yaml.snakeyaml.DumperOptions

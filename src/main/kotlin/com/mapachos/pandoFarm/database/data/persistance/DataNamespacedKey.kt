@@ -25,6 +25,7 @@ enum class DataNamespacedKey(val key: String) {
     HARVEST_TYPE_NAME("harvestTypeDto"),
     HARVEST_METHOD("interactionTypeDto"),
     INTERACTION_METHOD("harvestInteractionTypeDto"),
+    MATURE_AGE("matureAgeDto"),
     ENTITY_CLASS("entityClassDto"),
     HARVEST_TYPE_CUSTOM_MODEL_COMPONENT_STRING("harvestTypeCustomModelComponentStringDto"),
     MODEL_BATCH("modelBatchDto");

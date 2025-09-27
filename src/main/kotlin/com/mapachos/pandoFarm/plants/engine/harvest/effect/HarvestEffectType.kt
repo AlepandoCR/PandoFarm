@@ -1,7 +1,6 @@
 package com.mapachos.pandoFarm.plants.engine.harvest.effect
 
-import com.mapachos.pandoFarm.plants.data.HarvestEffectDto
-import com.mapachos.pandoFarm.plants.engine.harvest.effect.types.NoneHarvestEffect
+import com.mapachos.pandoFarm.plants.engine.harvest.data.HarvestEffectDto
 
 class HarvestEffectType(val harvestEffect: HarvestEffect) {
 

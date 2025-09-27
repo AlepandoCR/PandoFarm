@@ -8,7 +8,7 @@ data class DateDto(
     val year: Int,
     val month: Int,
     val day: Int,
-) : Dto {
+) : ContainerDto {
     override fun applyOnPersistentDataContainer(persistentDataContainer: PersistentDataContainer) {
         persistentDataContainer.set(DataNamespacedKey.YEAR.toNamespacedKey(), PersistentDataType.INTEGER, year)
         persistentDataContainer.set(DataNamespacedKey.MONTH.toNamespacedKey(), PersistentDataType.INTEGER, month)

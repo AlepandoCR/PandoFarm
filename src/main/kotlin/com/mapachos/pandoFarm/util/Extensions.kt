@@ -2,24 +2,39 @@ package com.mapachos.pandoFarm.util
 
 
 import com.mapachos.pandoFarm.PandoFarm
-import com.mapachos.pandoFarm.yml.AutoYML
-import com.mapachos.pandoFarm.yml.DataFolder
+import com.mapachos.pandoFarm.player.data.PlayerDto
+import com.mapachos.pandoFarm.player.management.PlayerDataManager
+import com.mapachos.pandoFarm.util.command.AutoCommand
+import com.mapachos.pandoFarm.util.yml.AutoYML
+import com.mapachos.pandoFarm.util.yml.DataFolder
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import java.io.Serializable
 
 private val plugin = PandoFarm.getInstance()
+
+fun Player.farmData(): PlayerDto{
+    return PlayerDataManager.getPlayerData(this)
+}
+
+fun autoCommand(
+    handler: (CommandSender, Command, String, Array<String>) -> Boolean,
+    completions: List<String> = emptyList(),
+    onlyOp: Boolean = false
+): AutoCommand = AutoCommand(handler, completions, onlyOp)
+
 
 inline fun <reified T: Serializable> autoYml(name: String, dataFolder: DataFolder,header: String? = null): AutoYML<T> =
     AutoYML.create(T::class, name, dataFolder, header)

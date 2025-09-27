@@ -1,11 +1,12 @@
 package com.mapachos.pandoFarm.plants.engine.management
 
+import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.plants.engine.Plant
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import java.util.UUID
 
-object GlobalPlantRegistry {
+class GlobalPlantRegistry(val plugin: PandoFarm) {
     val plantRegistries = mutableListOf<PlantRegistry>()
 
     fun registerPlantRegistry(plantRegistry: PlantRegistry) {
@@ -20,15 +21,16 @@ object GlobalPlantRegistry {
         return plantRegistries.flatMap { it.registry }
     }
 
-    fun serveWorld(world: World) {
-        if(plantRegistries.none { it.world == world }){
-            registerPlantRegistry(PlantRegistry(world))
-        }
+    private fun serveWorld(world: World) : PlantRegistry{
+        val registry = PlantRegistry(world, plugin)
+        registerPlantRegistry(registry)
+        return registry
     }
 
     fun removeWorld(world: World) {
         plantRegistries.firstOrNull { it.world == world }?.let {
             unregisterPlantRegistry(it)
+            it.removePlantsOnWorld(world)
         }
     }
 
@@ -36,8 +38,8 @@ object GlobalPlantRegistry {
         return plantRegistries.filter { it.world == world }.flatMap { it.registry }
     }
 
-    fun getRegistryForWorld(world: World): PlantRegistry? {
-        return plantRegistries.firstOrNull { it.world == world }
+    fun getRegistryForWorld(world: World): PlantRegistry {
+        return plantRegistries.firstOrNull { it.world == world } ?: serveWorld(world)
     }
 
 

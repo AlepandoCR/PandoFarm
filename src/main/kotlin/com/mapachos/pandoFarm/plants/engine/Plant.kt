@@ -9,7 +9,7 @@ import com.mapachos.pandoFarm.plants.data.PlantDto
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantGrowEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.SpawnPlantEvent
 
-import com.mapachos.pandoFarm.util.DynamicListener
+import com.mapachos.pandoFarm.util.listeners.DynamicListener
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.event.Event
@@ -23,9 +23,10 @@ abstract class Plant<E: Entity>(
     val plantType: PlantType<E>,
     var age: Long = 0, // In seconds
     val uniqueIdentifier: UUID = UUID.randomUUID(),
+    val matureAge: Long
 ) {
     val dynamicListener = DynamicListener()
-    val chunk = location.chunk
+    val world = location.world!!
 
     private var modelBatch = PlantModelBatchRegistry.serveID(plantType.modelBatch.id, plantType.modelBatch.entityClass)
 
@@ -57,11 +58,11 @@ abstract class Plant<E: Entity>(
     }
 
     fun isMature(): Boolean{
-        return age >= matureAge()
+        return age >= matureAge
     }
 
     fun growInterval(): Long {
-        return matureAge() / 4
+        return matureAge / 4
     }
 
     fun getModelBatchID(): String {
@@ -88,15 +89,7 @@ abstract class Plant<E: Entity>(
         switchModel()
     }
 
-    abstract fun harvest() // Only HarvestPlants use this method, but it's defined here for it to only be one listener per plant
-
-    // In seconds
-    abstract fun matureAge(): Long
-
-    /**
-     * Called every second
-     */
-    abstract fun task()
+    open fun harvest(){} // Only HarvestPlants use this method, but it's defined here for it to only be one listener per plant
 
     abstract fun save()
 

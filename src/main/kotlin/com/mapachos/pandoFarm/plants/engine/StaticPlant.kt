@@ -13,24 +13,18 @@ class StaticPlant<E: Entity>(
     location: Location,
     plantType: PlantType<E>,
     age: Long = 0,
-    uniqueIdentifier: UUID = UUID.randomUUID()
+    uniqueIdentifier: UUID = UUID.randomUUID(),
+    matureAge: Long
 ) : Plant<E>(
     location,
     plantType,
     age,
-    uniqueIdentifier
+    uniqueIdentifier,
+    matureAge
     ) {
     override fun toDto(): PlantDto {
-        return StaticPlantDto(uniqueIdentifier, plantType.toDto(), age, location.toDto())
+        return StaticPlantDto(uniqueIdentifier.toString(), plantType.toDto(), age, location.toDto())
     }
-
-    override fun harvest() {
-        // Static plants cannot be harvested
-    }
-
-    override fun matureAge(): Long { TODO("Not yet implemented") }
-
-    override fun task() { TODO("Not yet implemented") }
 
     override fun save() {
         val dto = toDto() as StaticPlantDto
@@ -43,12 +37,15 @@ class StaticPlant<E: Entity>(
 
         fun load(dto: StaticPlantDto): StaticPlant<out Entity> {
             val type = dto.plantType.toPlantType()
-            return StaticPlant(
-                dto.location.toLocation(),
+            val location = dto.location.toLocation()
+            val plant = StaticPlant(
+                location,
                 type,
                 dto.age,
-                dto.uniqueIdentifier
+                UUID.fromString(dto.uniqueIdentifier),
+                type.matureAge
             )
+            return plant
         }
     }
 }

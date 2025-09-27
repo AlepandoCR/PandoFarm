@@ -1,6 +1,6 @@
-package com.mapachos.pandoFarm.plants.data
+package com.mapachos.pandoFarm.plants.engine.harvest.data
 
-import com.mapachos.pandoFarm.database.data.Dto
+import com.mapachos.pandoFarm.database.data.ContainerDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
 import org.bukkit.persistence.PersistentDataContainer
@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataType
 data class HarvestDto(
     val quality: Int,
     val harvestType: HarvestTypeDto
-): Dto {
+): ContainerDto {
     fun toHarvest(): Harvest {
         return Harvest(quality, harvestType.toHarvestType())
     }

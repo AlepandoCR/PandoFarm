@@ -1,6 +1,6 @@
-package com.mapachos.pandoFarm.plants.data
+package com.mapachos.pandoFarm.plants.engine.harvest.data
 
-import com.mapachos.pandoFarm.database.data.Dto
+import com.mapachos.pandoFarm.database.data.ContainerDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.engine.harvest.HarvestType
 import org.bukkit.Material
@@ -12,7 +12,7 @@ data class HarvestTypeDto(
     val effect: HarvestEffectDto,
     val customModelComponentString: String,
     val material: String
-): Dto {
+): ContainerDto {
 
     fun toHarvestType(): HarvestType {
         return HarvestType(

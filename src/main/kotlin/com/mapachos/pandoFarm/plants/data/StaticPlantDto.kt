@@ -3,12 +3,14 @@ package com.mapachos.pandoFarm.plants.data
 import com.mapachos.pandoFarm.database.data.LocationDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.PlantType
+import com.mapachos.pandoFarm.plants.engine.StaticPlant
+import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import java.util.UUID
 
 class StaticPlantDto(
-    uniqueIdentifier: UUID,
+    uniqueIdentifier: String,
     plantType: PlantTypeDto,
     age: Long,
     location: LocationDto,
@@ -18,8 +20,13 @@ class StaticPlantDto(
     age,
     location
 ) {
+
+    fun toStaticPlant(): StaticPlant<out Entity> {
+        return StaticPlant.load(this)
+    }
+
     override fun applyOnPersistentDataContainer(persistentDataContainer: PersistentDataContainer) {
-        persistentDataContainer.set(DataNamespacedKey.UUID.toNamespacedKey(), PersistentDataType.STRING, uniqueIdentifier.toString())
+        persistentDataContainer.set(DataNamespacedKey.UUID.toNamespacedKey(), PersistentDataType.STRING, uniqueIdentifier)
         persistentDataContainer.set(DataNamespacedKey.AGE.toNamespacedKey(), PersistentDataType.LONG, age)
         location.applyOnPersistentDataContainer(persistentDataContainer)
         plantType.applyOnPersistentDataContainer(persistentDataContainer)
@@ -33,9 +40,8 @@ class StaticPlantDto(
             val plantType = PlantTypeDto.fromPersistentDataContainer(persistentDataContainer)
 
             if (uuidString.isNullOrBlank() || plantType == null || age == null || location == null) return null
-            val uuid = try { UUID.fromString(uuidString) } catch (_: IllegalArgumentException) { return null }
 
-            return StaticPlantDto(uuid, plantType, age, location)
+            return StaticPlantDto(uuidString, plantType, age, location)
         }
     }
 }

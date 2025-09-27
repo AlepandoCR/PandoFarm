@@ -11,7 +11,7 @@ data class LocationDto(
     val y: Double,
     val z: Double,
     val world: String
-): Dto {
+): ContainerDto {
 
     fun toLocation(): Location {
         val world = Bukkit.getWorld(world)

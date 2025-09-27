@@ -2,3 +2,10 @@ name: PandoFarm
 version: '1.0.0'
 main: com.mapachos.pandoFarm.PandoFarm
 api-version: '1.21'
+commands:
+  reloadharvests:
+    description: Reloads the harvest configurations.
+    usage: /reloadharvests
+  reloadplants:
+    description: Reloads the plant configurations.
+    usage: /reloadplants

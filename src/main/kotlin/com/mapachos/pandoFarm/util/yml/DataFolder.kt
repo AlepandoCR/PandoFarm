@@ -1,6 +1,6 @@
-package com.mapachos.pandoFarm.yml
+package com.mapachos.pandoFarm.util.yml
 
 enum class DataFolder(val path: String) {
-    PANTS("pants"),
+    PLANTS("plants"),
     HARVESTS("harvests")
 }

@@ -1,6 +1,6 @@
 package com.mapachos.pandoFarm.plants.data
 
-import com.mapachos.pandoFarm.database.data.Dto
+import com.mapachos.pandoFarm.database.data.ContainerDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.model.plant.PlantModelBatch
 import com.mapachos.pandoFarm.model.plant.PlantModelBatchRegistry
@@ -10,7 +10,7 @@ import org.bukkit.persistence.PersistentDataContainer
 data class ModelBatchDto(
     val modelBatchId: String,
     val entityClass: String,
-): Dto {
+): ContainerDto {
     fun toModelBatch(): PlantModelBatch<out Entity> {
         val clazz: Class<out Entity> = try {
             Class.forName("org.bukkit.entity.$entityClass").asSubclass(Entity::class.java)

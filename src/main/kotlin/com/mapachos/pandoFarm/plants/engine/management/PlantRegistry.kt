@@ -1,11 +1,16 @@
 package com.mapachos.pandoFarm.plants.engine.management
 
+import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.plants.engine.HarvestPlant
 import com.mapachos.pandoFarm.plants.engine.Plant
-import org.bukkit.Chunk
+import com.mapachos.pandoFarm.plants.engine.StaticPlant
 import org.bukkit.World
 import org.bukkit.entity.Entity
 
-class PlantRegistry(val world: World) {
+class PlantRegistry(
+    val world: World,
+    val plugin: PandoFarm
+) {
     val registry: MutableList<Plant<out Entity>> = mutableListOf()
     val growthEngine = GrowthEngine(this)
 
@@ -18,16 +23,16 @@ class PlantRegistry(val world: World) {
         plant.save()
     }
 
-    fun getPlantsOnChunk(chunk: Chunk): List<Plant<out Entity>> {
+    fun getPlantsOnWorld(world: World): List<Plant<out Entity>> {
         return registry.filter { plant ->
-            plant.chunk == chunk
+            plant.world == world
         }
     }
 
-    fun removePlantsOnChunk(chunk: Chunk, save: Boolean = true) {
-        val filteredList = registry.filter { it.chunk == chunk }
+    fun removePlantsOnWorld(world: World, save: Boolean = true) {
+        val filteredList = registry.filter { it.world == world }
         if(save){
-            filteredList.forEach { it.save() }
+            filteredList.forEach { it.remove() }
         }
         registry.removeAll(filteredList)
     }
@@ -36,11 +41,25 @@ class PlantRegistry(val world: World) {
         registry.addAll(plants)
     }
 
-    fun loadPlantsOnChunk(chunk: Chunk) {
-        TODO("get entities from chunk and load plants from persistent data containers of entities")
-    }
+    fun loadPlantsOnWorld(world: World) {
 
-    fun loadPlants() {
-        TODO("load all plants from persistent data containers of entities in the world")
+        val staticDtos = plugin.getStaticPlantTable().getAll().filter { it.location.world == world.name }
+        staticDtos.forEach { dto ->
+            val plant = StaticPlant.load(dto)
+            if(!registry.contains(plant)) {
+                addPlant(plant)
+                plant.spawn(dto.location.toLocation())
+            }
+
+        }
+
+        val harvestDtos = plugin.getHarvestPlantTable().getAll().filter { it.location.world == world.name }
+        harvestDtos.forEach { dto ->
+            val plant = HarvestPlant.load(dto)
+            if(!registry.contains(plant)) {
+                addPlant(plant)
+                plant.spawn(dto.location.toLocation())
+            }
+        }
     }
 }

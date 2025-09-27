@@ -1,19 +1,16 @@
-package com.mapachos.pandoFarm.plants.data
+package com.mapachos.pandoFarm.plants.engine.harvest.data
 
-import com.mapachos.pandoFarm.database.data.Dto
+import com.mapachos.pandoFarm.database.data.ContainerDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
-import com.mapachos.pandoFarm.plants.engine.harvest.HarvestTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffectRegistry
 import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffectType
-import com.mapachos.pandoFarm.plants.engine.harvest.effect.types.NoneHarvestEffect
-import com.sun.jna.platform.win32.OaIdl
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 data class HarvestEffectDto(
     val harvestEffectName: String,
     val description: String
-): Dto {
+): ContainerDto {
     fun toHarvestEffectType(): HarvestEffectType {
         return HarvestEffectType(HarvestEffectRegistry.getByName(harvestEffectName))
     }

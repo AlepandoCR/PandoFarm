@@ -15,22 +15,20 @@ class HarvestPlant<E: Entity>(
     plantType: PlantType<E>,
     val plantHarvest: Harvest,
     age: Long = 0,
-    uniqueIdentifier: UUID = UUID.randomUUID()
+    uniqueIdentifier: UUID = UUID.randomUUID(),
+    matureAge: Long
 ) : Plant<E>(
     location,
     plantType,
     age,
-    uniqueIdentifier
+    uniqueIdentifier,
+    matureAge
     ) {
     override fun toDto(): PlantDto {
-        return HarvestPlantDto(uniqueIdentifier, plantType.toDto(), age, location.toDto(), plantHarvest.toDto())
+        return HarvestPlantDto(uniqueIdentifier.toString(), plantType.toDto(), age, location.toDto(), plantHarvest.toDto())
     }
 
     override fun harvest() { TODO("Not yet implemented") }
-
-    override fun matureAge(): Long { TODO("Not yet implemented") }
-
-    override fun task() { TODO("Not yet implemented") }
 
     override fun save() {
         val dto = toDto() as HarvestPlantDto
@@ -41,17 +39,19 @@ class HarvestPlant<E: Entity>(
 
     companion object {
 
-        fun load(dto: HarvestPlantDto): HarvestPlant<out Entity>? {
+        fun load(dto: HarvestPlantDto): HarvestPlant<out Entity> {
             val type = dto.plantType.toPlantType()
-            dto.harvestDto.harvestType.toHarvestType()
             val harvest = dto.harvestDto.toHarvest()
-            return HarvestPlant(
-                dto.location.toLocation(),
+            val location = dto.location.toLocation()
+            val plant =  HarvestPlant(
+                location,
                 type,
                 harvest,
                 dto.age,
-                dto.uniqueIdentifier
+                UUID.fromString(dto.uniqueIdentifier),
+                type.matureAge
             )
+            return plant
         }
     }
 }

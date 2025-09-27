@@ -1,21 +1,19 @@
-package com.mapachos.pandoFarm.util
+package com.mapachos.pandoFarm.util.listeners
 
 import com.mapachos.pandoFarm.PandoFarm
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
- * Manages a Bukkit [Listener] dynamically, allowing it to be registered and unregistered on demand.
+ * Manages a Bukkit [org.bukkit.event.Listener] dynamically, allowing it to be registered and unregistered on demand.
  * This is useful for listeners that are only needed for a short period, such as during a dialog interaction.
  *
  * @property plugin The plugin instance used for registering the listener.
  */
 class DynamicListener
 {
-    private val plugin = PandoFarm.getInstance()
+    private val plugin = PandoFarm.Companion.getInstance()
     private var activeListener = false
     private var listener: Listener? = null
 
