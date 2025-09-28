@@ -1,6 +1,8 @@
 package com.mapachos.pandoFarm.plants.engine.management
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.plants.PlantType
+import com.mapachos.pandoFarm.plants.engine.GrowthStage
 import com.mapachos.pandoFarm.plants.engine.Plant
 import org.bukkit.World
 import org.bukkit.entity.Entity
@@ -42,8 +44,15 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
         return plantRegistries.firstOrNull { it.world == world } ?: serveWorld(world)
     }
 
-
     fun getPlant(uuid: UUID): Plant<out Entity>? {
         return getAllPlants().firstOrNull { it.uniqueIdentifier == uuid }
+    }
+
+    fun getPlantsByType(type: PlantType<out Entity>): List<Plant<out Entity>> {
+        return getAllPlants().filter { it.plantType == type }
+    }
+
+    fun getPlantsByStage(stage: GrowthStage): List<Plant<out Entity>> {
+        return getAllPlants().filter { it.stage == stage }
     }
 }

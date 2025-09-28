@@ -1,9 +1,11 @@
 package com.mapachos.pandoFarm
 
 import com.mapachos.pandoFarm.database.MySQLManager
+import com.mapachos.pandoFarm.database.table.types.FarmSalesTable
 import com.mapachos.pandoFarm.database.table.types.HarvestPlantTable
 import com.mapachos.pandoFarm.database.table.types.PlayerDataTable
 import com.mapachos.pandoFarm.database.table.types.StaticPlantTable
+import com.mapachos.pandoFarm.market.engine.FarmMarketManager
 import com.mapachos.pandoFarm.plants.engine.PlantTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.harvest.HarvestTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.management.GlobalPlantRegistry
@@ -23,19 +25,34 @@ class PandoFarm : JavaPlugin() {
 
     private lateinit var pPlayerDataTable: PlayerDataTable
 
+    private lateinit var pFarmSalesTable: FarmSalesTable
+
     private lateinit var pGlobalPlantRegistry: GlobalPlantRegistry
 
     override fun onEnable() {
         pInstance = this
         mySql()
 
-        PlayerDataManager.start(this)
-        pGlobalPlantRegistry = GlobalPlantRegistry(this)
+        manager()
 
+        startRegistries()
+
+        listeners()
+    }
+
+    private fun listeners() {
+        registerListener(PlantEventListener(this))
+    }
+
+    private fun manager() {
+        PlayerDataManager.start(this)
+        FarmMarketManager.loadAllMarkets(this)
+    }
+
+    private fun startRegistries() {
+        pGlobalPlantRegistry = GlobalPlantRegistry(this)
         HarvestTypeRegistry.start()
         PlantTypeRegistry.start()
-
-        registerListener(PlantEventListener(this))
     }
 
     override fun onDisable() {
@@ -57,6 +74,8 @@ class PandoFarm : JavaPlugin() {
         pHarvestPlantTable.createTable()
         pPlayerDataTable = PlayerDataTable(mysql)
         pPlayerDataTable.createTable()
+        pFarmSalesTable = FarmSalesTable(mysql)
+        pFarmSalesTable.createTable()
     }
 
     fun registerCommand(name: String, executor: CommandExecutor) {
@@ -86,6 +105,13 @@ class PandoFarm : JavaPlugin() {
             throw IllegalStateException("PlayerDataTable is not initialized")
         }
         return pPlayerDataTable
+    }
+
+    fun getFarmSalesTable(): FarmSalesTable {
+        if(!this::pFarmSalesTable.isInitialized){
+            throw IllegalStateException("FarmSalesTable is not initialized")
+        }
+        return pFarmSalesTable
     }
 
     fun getHarvestPlantTable(): HarvestPlantTable {

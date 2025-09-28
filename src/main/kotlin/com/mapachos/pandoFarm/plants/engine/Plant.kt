@@ -1,5 +1,6 @@
 package com.mapachos.pandoFarm.plants.engine
 
+import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.model.Model
 import com.mapachos.pandoFarm.model.plant.PlantModelBatch
 import com.mapachos.pandoFarm.model.plant.PlantModelBatchRegistry
@@ -69,8 +70,8 @@ abstract class Plant<E: Entity>(
         return modelBatch.id
     }
 
-    fun remove(){
-        save()
+    fun remove(plugin: PandoFarm) {
+        save(plugin)
         model.remove()
         dynamicListener.stop()
     }
@@ -91,7 +92,7 @@ abstract class Plant<E: Entity>(
 
     open fun harvest(){} // Only HarvestPlants use this method, but it's defined here for it to only be one listener per plant
 
-    abstract fun save()
+    abstract fun save(plugin: PandoFarm)
 
     abstract fun interact()
 

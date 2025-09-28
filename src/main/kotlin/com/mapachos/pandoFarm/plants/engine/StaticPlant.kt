@@ -26,9 +26,9 @@ class StaticPlant<E: Entity>(
         return StaticPlantDto(uniqueIdentifier.toString(), plantType.toDto(), age, location.toDto())
     }
 
-    override fun save() {
+    override fun save(plugin: PandoFarm) {
         val dto = toDto() as StaticPlantDto
-        PandoFarm.getInstance().getStaticPlantTable().insertOrUpdate(dto)
+        plugin.getStaticPlantTable().insertOrUpdate(dto)
     }
 
     override fun interact() { TODO("Not yet implemented") }

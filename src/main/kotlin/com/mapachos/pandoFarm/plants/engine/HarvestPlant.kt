@@ -30,9 +30,9 @@ class HarvestPlant<E: Entity>(
 
     override fun harvest() { TODO("Not yet implemented") }
 
-    override fun save() {
+    override fun save(plugin: PandoFarm) {
         val dto = toDto() as HarvestPlantDto
-        PandoFarm.getInstance().getHarvestPlantTable().insertOrUpdate(dto)
+        plugin.getHarvestPlantTable().insertOrUpdate(dto)
     }
 
     override fun interact() { TODO("Not yet implemented") }

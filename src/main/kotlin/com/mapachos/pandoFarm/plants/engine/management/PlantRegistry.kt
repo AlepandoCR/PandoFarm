@@ -20,7 +20,7 @@ class PlantRegistry(
 
     fun removePlant(plant: Plant<out Entity>) {
         registry.remove(plant)
-        plant.save()
+        plant.remove(plugin)
     }
 
     fun getPlantsOnWorld(world: World): List<Plant<out Entity>> {
@@ -32,7 +32,7 @@ class PlantRegistry(
     fun removePlantsOnWorld(world: World, save: Boolean = true) {
         val filteredList = registry.filter { it.world == world }
         if(save){
-            filteredList.forEach { it.remove() }
+            filteredList.forEach { it.remove(plugin) }
         }
         registry.removeAll(filteredList)
     }
