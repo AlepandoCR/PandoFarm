@@ -25,7 +25,6 @@ class GrowthEngine(val plantRegistry: PlantRegistry) {
                     it.grow()
                 }
                 it.age++
-                it.task()
             }
 
             ticks++
