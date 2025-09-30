@@ -8,8 +8,7 @@ import com.mapachos.pandoFarm.model.preset.ModelPreset
 import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.data.PlantDto
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantGrowEvent
-import com.mapachos.pandoFarm.plants.engine.event.plant.SpawnPlantEvent
-
+import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
 import com.mapachos.pandoFarm.util.listeners.DynamicListener
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -77,7 +76,7 @@ abstract class Plant<E: Entity>(
     }
 
     fun onSpawn(){
-        SpawnPlantEvent(this).callEvent()
+        PlantSpawnEvent(this).callEvent()
     }
 
     abstract fun toDto(): PlantDto

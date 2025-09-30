@@ -7,7 +7,6 @@ import com.mapachos.pandoFarm.plants.engine.HarvestPlant
 import com.mapachos.pandoFarm.plants.engine.InteractionMethod
 import com.mapachos.pandoFarm.plants.engine.Plant
 import com.mapachos.pandoFarm.plants.engine.StaticPlant
-import com.mapachos.pandoFarm.plants.engine.event.plant.PlantPlantEvent
 import com.mapachos.pandoFarm.plants.engine.harvest.HarvestTypeRegistry
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -29,8 +28,6 @@ class PlantTypeDto(
         }else{
             buildHarvestPlant(location)
         }
-
-        PlantPlantEvent(plant, gardener).callEvent()
 
         return plant
     }

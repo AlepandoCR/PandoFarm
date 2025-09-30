@@ -1,9 +1,11 @@
 package com.mapachos.pandoFarm.plants.engine.management
 
 import com.mapachos.pandoFarm.PandoFarm
-import com.mapachos.pandoFarm.plants.engine.event.plant.PlantPlantEvent
+import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
+import com.mapachos.pandoFarm.plants.engine.seeds.event.PlaceSeedEvent
 import com.mapachos.pandoFarm.util.farmData
 import org.bukkit.World
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -49,11 +51,18 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
         }
     }
 
+    /**
+     * When a plant is spawned in the world, add it its respective PlantRegistry
+     */
     @EventHandler
-    fun onPlantEvent(event: PlantPlantEvent){
-        val gardener = event.gardener
-        if(gardener is Player) {
-            gardener.farmData().plantedPlants++
-        }
+    fun onPlantSpawn(event: PlantSpawnEvent<out Entity>){
+        val plant = event.plant
+        globalPlantRegistry.getRegistryForWorld(plant.world).addPlant(plant)
+    }
+
+    @EventHandler
+    fun onPlantEvent(event: PlaceSeedEvent){
+        val gardener = event.player
+        gardener.farmData().plantedPlants++
     }
 }

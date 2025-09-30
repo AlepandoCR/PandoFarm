@@ -42,6 +42,7 @@ class PandoFarm : JavaPlugin() {
 
     private fun listeners() {
         registerListener(PlantEventListener(this))
+        registerListener(PlantEventListener(this))
     }
 
     private fun manager() {
@@ -128,7 +129,10 @@ class PandoFarm : JavaPlugin() {
             if(!this::pInstance.isInitialized){
                 throw IllegalStateException("PandoFarm is not initialized")
             }
+
             return pInstance
         }
+
+
     }
 }

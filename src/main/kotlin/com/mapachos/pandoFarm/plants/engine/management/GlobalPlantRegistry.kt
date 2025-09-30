@@ -41,11 +41,11 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
     }
 
     fun getRegistryForWorld(world: World): PlantRegistry {
-        return plantRegistries.firstOrNull { it.world == world } ?: serveWorld(world)
+        return plantRegistries.find { it.world == world } ?: serveWorld(world)
     }
 
     fun getPlant(uuid: UUID): Plant<out Entity>? {
-        return getAllPlants().firstOrNull { it.uniqueIdentifier == uuid }
+        return getAllPlants().find { it.uniqueIdentifier == uuid }
     }
 
     fun getPlantsByType(type: PlantType<out Entity>): List<Plant<out Entity>> {
