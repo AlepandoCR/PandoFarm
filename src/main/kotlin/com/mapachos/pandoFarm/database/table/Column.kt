@@ -1,6 +1,6 @@
 package com.mapachos.pandoFarm.database.table
 
-import java.util.UUID
+import java.util.*
 
 data class Column<T>(
     val name: String,

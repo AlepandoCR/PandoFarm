@@ -1,9 +1,6 @@
 package com.mapachos.pandoFarm.plants.engine.harvest
 
-import com.google.common.collect.Multimap
 import net.kyori.adventure.text.Component
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.components.CustomModelDataComponent
@@ -29,9 +26,6 @@ class HarvestItem(val harvest: Harvest) {
         customModelDataComponent.strings.add(harvest.harvestType.customModelComponentString)
     }
 
-    private fun attributeModifiers(map: Multimap<Attribute, AttributeModifier>?){
-
-    }
 
     fun buildItem(): ItemStack{
         val item = ItemStack(harvest.harvestType.material)
@@ -45,7 +39,6 @@ class HarvestItem(val harvest: Harvest) {
     fun data(meta: ItemMeta) {
         persistentDataContainer(meta.persistentDataContainer)
         customModelDataComponent(meta.customModelDataComponent)
-        attributeModifiers(meta.attributeModifiers)
     }
 
     private fun decorators(meta: ItemMeta) {

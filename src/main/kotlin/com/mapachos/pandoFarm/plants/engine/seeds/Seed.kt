@@ -39,10 +39,6 @@ class Seed<I: Material>(
         customModelDataComponent.strings.add(plant.plantTypeName.replace(" ", "_").lowercase())
     }
 
-    private fun attributeModifiers(map: Multimap<Attribute, AttributeModifier>?){
-
-    }
-
     fun buildItem(): ItemStack{
         val item = ItemStack(material)
         val meta = item.itemMeta ?: return item
@@ -55,7 +51,6 @@ class Seed<I: Material>(
     fun data(meta: ItemMeta) {
         persistentDataContainer(meta.persistentDataContainer)
         customModelDataComponent(meta.customModelDataComponent)
-        attributeModifiers(meta.attributeModifiers)
     }
 
     private fun decorators(meta: ItemMeta) {

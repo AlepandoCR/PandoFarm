@@ -1,9 +1,7 @@
 package com.mapachos.pandoFarm.plants.engine.management
 
 import com.mapachos.pandoFarm.PandoFarm
-import com.mapachos.pandoFarm.plants.engine.HarvestPlant
 import com.mapachos.pandoFarm.plants.engine.Plant
-import com.mapachos.pandoFarm.plants.engine.StaticPlant
 import org.bukkit.World
 import org.bukkit.entity.Entity
 

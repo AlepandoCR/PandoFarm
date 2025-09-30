@@ -1,12 +1,12 @@
 package com.mapachos.pandoFarm.model
 
-import kr.toxicity.model.api.bone.RenderedBone
-import kr.toxicity.model.api.tracker.EntityHideOption
-import kr.toxicity.model.api.tracker.ModelScaler
 import com.mapachos.pandoFarm.model.preset.ModelPreset
 import com.mapachos.pandoFarm.model.util.ModelManager
 import com.mapachos.pandoFarm.model.util.RendererSupplier
 import com.mapachos.pandoFarm.model.util.RendererSupplier.resize
+import kr.toxicity.model.api.bone.RenderedBone
+import kr.toxicity.model.api.tracker.EntityHideOption
+import kr.toxicity.model.api.tracker.ModelScaler
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Display.Billboard

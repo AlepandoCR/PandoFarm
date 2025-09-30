@@ -32,11 +32,4 @@ class Harvest(
         )
     }
 
-    fun load(){
-
-    }
-
-    fun save(){
-
-    }
 }

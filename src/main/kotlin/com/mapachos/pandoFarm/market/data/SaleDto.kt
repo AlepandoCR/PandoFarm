@@ -4,7 +4,7 @@ import com.mapachos.pandoFarm.database.data.Dto
 import com.mapachos.pandoFarm.market.engine.MarketType
 import com.mapachos.pandoFarm.market.engine.Sale
 import com.mapachos.pandoFarm.plants.engine.harvest.data.HarvestDto
-import java.util.UUID
+import java.util.*
 
 data class SaleDto(
     val uuid: UUID,

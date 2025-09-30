@@ -41,7 +41,7 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     }
 
     private fun isPlayerAlone(world: World, player: Player): Boolean =
-        (world.players.size == 1 && world.players.first() == player)
+        world.players.size == 1 && world.players.first() == player
 
     @EventHandler
     fun onPlayerChangedWorld(event: PlayerChangedWorldEvent) {

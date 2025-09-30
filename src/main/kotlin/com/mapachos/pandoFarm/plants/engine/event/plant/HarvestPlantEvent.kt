@@ -6,5 +6,4 @@ import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
-class HarvestPlantEvent(player: Player, val plant: Plant<out Entity>, val harvest: Harvest): PlayerFarmEvent(player) {
-}
+class HarvestPlantEvent(player: Player, val plant: Plant<out Entity>, val harvest: Harvest): PlayerFarmEvent(player)

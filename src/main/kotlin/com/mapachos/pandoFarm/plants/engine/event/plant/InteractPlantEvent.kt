@@ -5,5 +5,4 @@ import com.mapachos.pandoFarm.plants.engine.event.PlayerFarmEvent
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
-class InteractPlantEvent(player: Player, val plant: Plant<out Entity>): PlayerFarmEvent(player) {
-}
+class InteractPlantEvent(player: Player, val plant: Plant<out Entity>): PlayerFarmEvent(player)

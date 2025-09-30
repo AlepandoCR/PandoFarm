@@ -4,5 +4,4 @@ import com.mapachos.pandoFarm.plants.engine.Plant
 import com.mapachos.pandoFarm.plants.engine.event.FarmEvent
 import org.bukkit.entity.Entity
 
-abstract class PlantEvent<E: Entity>(val plant: Plant<E>): FarmEvent() {
-}
+abstract class PlantEvent<E: Entity>(val plant: Plant<E>): FarmEvent()

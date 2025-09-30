@@ -8,7 +8,7 @@ import com.mapachos.pandoFarm.plants.engine.Plant
 import com.mapachos.pandoFarm.plants.engine.StaticPlant
 import org.bukkit.World
 import org.bukkit.entity.Entity
-import java.util.UUID
+import java.util.*
 
 class GlobalPlantRegistry(val plugin: PandoFarm) {
     private val allPlantsMap = HashMap<UUID, Plant<out Entity>>()

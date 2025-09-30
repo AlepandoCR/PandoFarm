@@ -2,12 +2,10 @@ package com.mapachos.pandoFarm.plants.data
 
 import com.mapachos.pandoFarm.database.data.LocationDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
-import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.engine.StaticPlant
 import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
-import java.util.UUID
 
 class StaticPlantDto(
     uniqueIdentifier: String,
