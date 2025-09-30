@@ -29,37 +29,7 @@ class PlantRegistry(
         }
     }
 
-    fun removePlantsOnWorld(world: World, save: Boolean = true) {
-        val filteredList = registry.filter { it.world == world }
-        if(save){
-            filteredList.forEach { it.remove(plugin) }
-        }
-        registry.removeAll(filteredList)
-    }
-
     fun addPlants(vararg plants: Plant<out Entity>) {
         registry.addAll(plants)
-    }
-
-    fun loadPlantsOnWorld(world: World) {
-
-        val staticDtos = plugin.getStaticPlantTable().getAll().filter { it.location.world == world.name }
-        staticDtos.forEach { dto ->
-            val plant = StaticPlant.load(dto)
-            if(!registry.contains(plant)) {
-                addPlant(plant)
-                plant.spawn(dto.location.toLocation())
-            }
-
-        }
-
-        val harvestDtos = plugin.getHarvestPlantTable().getAll().filter { it.location.world == world.name }
-        harvestDtos.forEach { dto ->
-            val plant = HarvestPlant.load(dto)
-            if(!registry.contains(plant)) {
-                addPlant(plant)
-                plant.spawn(dto.location.toLocation())
-            }
-        }
     }
 }

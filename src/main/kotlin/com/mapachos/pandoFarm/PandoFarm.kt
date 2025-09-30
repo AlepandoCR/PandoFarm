@@ -6,14 +6,19 @@ import com.mapachos.pandoFarm.database.table.types.HarvestPlantTable
 import com.mapachos.pandoFarm.database.table.types.PlayerDataTable
 import com.mapachos.pandoFarm.database.table.types.StaticPlantTable
 import com.mapachos.pandoFarm.market.engine.FarmMarketManager
+import com.mapachos.pandoFarm.plants.PlantType
+import com.mapachos.pandoFarm.plants.engine.Plant
 import com.mapachos.pandoFarm.plants.engine.PlantTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.harvest.HarvestTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.management.GlobalPlantRegistry
 import com.mapachos.pandoFarm.plants.engine.management.PlantEventListener
+import com.mapachos.pandoFarm.plants.engine.seeds.listener.SeedListener
 import com.mapachos.pandoFarm.player.management.PlayerDataManager
 import org.bukkit.command.CommandExecutor
+import org.bukkit.entity.Entity
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.UUID
 
 class PandoFarm : JavaPlugin() {
 
@@ -41,7 +46,7 @@ class PandoFarm : JavaPlugin() {
     }
 
     private fun listeners() {
-        registerListener(PlantEventListener(this))
+        registerListener(SeedListener(this))
         registerListener(PlantEventListener(this))
     }
 

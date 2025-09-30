@@ -3,12 +3,16 @@ package com.mapachos.pandoFarm.plants.engine.management
 import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.engine.GrowthStage
+import com.mapachos.pandoFarm.plants.engine.HarvestPlant
 import com.mapachos.pandoFarm.plants.engine.Plant
+import com.mapachos.pandoFarm.plants.engine.StaticPlant
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import java.util.UUID
 
 class GlobalPlantRegistry(val plugin: PandoFarm) {
+    private val allPlantsMap = HashMap<UUID, Plant<out Entity>>()
+
     val plantRegistries = mutableListOf<PlantRegistry>()
 
     fun registerPlantRegistry(plantRegistry: PlantRegistry) {
@@ -20,20 +24,13 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
     }
 
     fun getAllPlants(): List<Plant<out Entity>> {
-        return plantRegistries.flatMap { it.registry }
+        return allPlantsMap.values.toList()
     }
 
     private fun serveWorld(world: World) : PlantRegistry{
         val registry = PlantRegistry(world, plugin)
         registerPlantRegistry(registry)
         return registry
-    }
-
-    fun removeWorld(world: World) {
-        plantRegistries.firstOrNull { it.world == world }?.let {
-            unregisterPlantRegistry(it)
-            it.removePlantsOnWorld(world)
-        }
     }
 
     fun getPlantsInWorld(world: World): List<Plant<out Entity>> {
@@ -45,14 +42,56 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
     }
 
     fun getPlant(uuid: UUID): Plant<out Entity>? {
-        return getAllPlants().find { it.uniqueIdentifier == uuid }
+        return allPlantsMap[uuid]
     }
 
     fun getPlantsByType(type: PlantType<out Entity>): List<Plant<out Entity>> {
-        return getAllPlants().filter { it.plantType == type }
+        return allPlantsMap.values.filter { it.plantType == type }
     }
 
     fun getPlantsByStage(stage: GrowthStage): List<Plant<out Entity>> {
-        return getAllPlants().filter { it.stage == stage }
+        return allPlantsMap.values.filter { it.stage == stage }
+    }
+
+    fun registerPlant(plant: Plant<out Entity>) {
+        getRegistryForWorld(plant.world).addPlant(plant)
+        allPlantsMap[plant.uniqueIdentifier] = plant
+    }
+
+    fun unregisterPlant(plant: Plant<out Entity>) {
+        getRegistryForWorld(plant.world).removePlant(plant)
+        allPlantsMap.remove(plant.uniqueIdentifier)
+    }
+
+    fun loadPlantsOnWorld(world: World) {
+        val staticDtos = plugin.getStaticPlantTable().getAll().filter { it.location.world == world.name }
+        staticDtos.forEach { dto ->
+            val plant = StaticPlant.load(dto)
+            if (allPlantsMap[plant.uniqueIdentifier] == null) {
+                registerPlant(plant)
+                plant.spawn(dto.location.toLocation())
+            }
+        }
+
+        val harvestDtos = plugin.getHarvestPlantTable().getAll().filter { it.location.world == world.name }
+        harvestDtos.forEach { dto ->
+            val plant = HarvestPlant.load(dto)
+            if (allPlantsMap[plant.uniqueIdentifier] == null) {
+                registerPlant(plant)
+                plant.spawn(dto.location.toLocation())
+            }
+        }
+    }
+
+    fun removePlantsOnWorld(world: World, save: Boolean = true) {
+        val registry = plantRegistries.find { it.world == world }
+        if (registry != null) {
+            val plantsToRemove = registry.registry.filter { it.world == world }
+            if (save) {
+                plantsToRemove.forEach { it.remove(plugin) }
+            }
+            plantsToRemove.forEach { allPlantsMap.remove(it.uniqueIdentifier) }
+            registry.registry.removeAll(plantsToRemove)
+        }
     }
 }

@@ -31,8 +31,6 @@ class StaticPlant<E: Entity>(
         plugin.getStaticPlantTable().insertOrUpdate(dto)
     }
 
-    override fun interact() { TODO("Not yet implemented") }
-
     companion object{
 
         fun load(dto: StaticPlantDto): StaticPlant<out Entity> {

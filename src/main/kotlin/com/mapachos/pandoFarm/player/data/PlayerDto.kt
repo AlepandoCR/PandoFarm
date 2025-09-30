@@ -5,7 +5,7 @@ import com.mapachos.pandoFarm.player.event.PlayerLevelUpEvent
 
 data class PlayerDto(
     val uuid: String,
-    var harvestedHarvests: Long,
+    var harvestedPlants: Long,
     var plantedPlants: Long,
     var harvestEarnings: Long,
     private var farmerExp: Long = 0L,

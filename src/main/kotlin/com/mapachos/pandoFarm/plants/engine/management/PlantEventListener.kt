@@ -1,9 +1,16 @@
 package com.mapachos.pandoFarm.plants.engine.management
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.plants.engine.InteractionMethod
+import com.mapachos.pandoFarm.plants.engine.Plant
+import com.mapachos.pandoFarm.plants.engine.Plant.Companion.getPlant
+import com.mapachos.pandoFarm.plants.engine.Plant.Companion.isPlant
+import com.mapachos.pandoFarm.plants.engine.event.plant.HarvestPlantEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
 import com.mapachos.pandoFarm.plants.engine.seeds.event.PlaceSeedEvent
 import com.mapachos.pandoFarm.util.farmData
+import kr.toxicity.model.api.event.ModelInteractAtEvent
+import kr.toxicity.model.api.nms.ModelInteractionHand
 import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -21,7 +28,7 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val world = event.player.world
         if (world.players.isEmpty() || isPlayerAlone(world, event.player)) {
-            globalPlantRegistry.removeWorld(world)
+            globalPlantRegistry.removePlantsOnWorld(world)
         }
     }
 
@@ -29,7 +36,7 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val world = event.player.world
         if (isPlayerAlone(world, event.player)) {
-            globalPlantRegistry.getRegistryForWorld(world).loadPlantsOnWorld(world)
+            globalPlantRegistry.loadPlantsOnWorld(world)
         }
     }
 
@@ -42,12 +49,12 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
         val toWorld = event.player.world
 
         if (fromWorld.players.isEmpty() || isPlayerAlone(fromWorld, event.player)) {
-            globalPlantRegistry.removeWorld(fromWorld)
+            globalPlantRegistry.removePlantsOnWorld(fromWorld)
         }
 
         // Load plants in the new world if the player is alone, if not, plants should already be loaded
         if(isPlayerAlone(toWorld, event.player)) {
-            globalPlantRegistry.getRegistryForWorld(toWorld).loadPlantsOnWorld(toWorld)
+            globalPlantRegistry.loadPlantsOnWorld(toWorld)
         }
     }
 
@@ -57,12 +64,71 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     @EventHandler
     fun onPlantSpawn(event: PlantSpawnEvent<out Entity>){
         val plant = event.plant
-        globalPlantRegistry.getRegistryForWorld(plant.world).addPlant(plant)
+        globalPlantRegistry.registerPlant(plant)
     }
 
     @EventHandler
     fun onPlantEvent(event: PlaceSeedEvent){
         val gardener = event.player
         gardener.farmData().plantedPlants++
+    }
+
+    @EventHandler
+    fun onPlantHarvest(event: HarvestPlantEvent){
+        val harvester = event.player
+        harvester.farmData().harvestedPlants++
+    }
+
+    @EventHandler
+    fun onPlantInteract(event: ModelInteractAtEvent){
+        val player = event.player
+        val entity = event.hitBox.source()
+        if(entity.isPlant()){
+            val plant = entity.getPlant(plugin) ?: return
+            val interactionMethod = plant.plantType.interactionMethod
+            val harvestMethod = plant.plantType.harvestMethod
+            val action = event.hand
+
+            when (action) {
+                ModelInteractionHand.LEFT -> handleAttack(plant, interactionMethod, harvestMethod,player)
+                ModelInteractionHand.RIGHT -> handleRightClick(plant, interactionMethod, harvestMethod, player)
+            }
+        }
+    }
+
+    private fun handleAttack(
+        plant: Plant<out Entity>,
+        interactionMethod: InteractionMethod,
+        harvestMethod: InteractionMethod,
+        player: Player
+    ) {
+        if(interactionMethod == InteractionMethod.DAMAGE){
+            handleInteraction(plant,player)
+        }
+        if(harvestMethod == InteractionMethod.DAMAGE){
+            handleHarvest(plant,player)
+        }
+    }
+
+    private fun handleRightClick(
+        plant: Plant<out Entity>,
+        interactionMethod: InteractionMethod,
+        harvestMethod: InteractionMethod,
+        player: Player
+    ) {
+        if(interactionMethod == InteractionMethod.RIGHT_CLICK){
+            handleInteraction(plant,player)
+        }
+        if(harvestMethod == InteractionMethod.RIGHT_CLICK){
+            handleHarvest(plant, player)
+        }
+    }
+
+    private fun handleInteraction(plant: Plant<out Entity>, player: Player) {
+        plant.interact(player)
+    }
+
+    private fun handleHarvest(plant: Plant<out Entity>, player: Player) {
+        plant.harvest(player)
     }
 }

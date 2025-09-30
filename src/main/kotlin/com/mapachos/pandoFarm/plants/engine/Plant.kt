@@ -6,17 +6,16 @@ import com.mapachos.pandoFarm.model.plant.PlantModelBatch
 import com.mapachos.pandoFarm.model.plant.PlantModelBatchRegistry
 import com.mapachos.pandoFarm.model.preset.ModelPreset
 import com.mapachos.pandoFarm.plants.PlantType
+import com.mapachos.pandoFarm.plants.data.HarvestPlantDto
 import com.mapachos.pandoFarm.plants.data.PlantDto
+import com.mapachos.pandoFarm.plants.data.StaticPlantDto
+import com.mapachos.pandoFarm.plants.engine.event.plant.InteractPlantEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantGrowEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
-import com.mapachos.pandoFarm.util.listeners.DynamicListener
 import org.bukkit.Location
 import org.bukkit.entity.Entity
-import org.bukkit.event.Event
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
+import org.bukkit.entity.Player
 import java.util.*
-import kotlin.reflect.KClass
 
 abstract class Plant<E: Entity>(
     val location: Location,
@@ -25,17 +24,14 @@ abstract class Plant<E: Entity>(
     val uniqueIdentifier: UUID = UUID.randomUUID(),
     val matureAge: Long
 ) {
-    val dynamicListener = DynamicListener()
     val world = location.world!!
 
     private var modelBatch = PlantModelBatchRegistry.serveID(plantType.modelBatch.id, plantType.modelBatch.entityClass)
 
     lateinit var model: Model<E>
 
+    lateinit var baseEntity: Entity
 
-    init {
-        dynamicListener.setListener(listener(plantType.harvestMethod.eventClass, plantType.interactionMethod.eventClass))
-    }
 
     val stage: GrowthStage get() = GrowthStage.fromPlant(this)
 
@@ -44,6 +40,16 @@ abstract class Plant<E: Entity>(
     fun spawn(location: Location) {
         onSpawn()
         model = modelPreset.buildModel(location)
+
+        startEntity()
+    }
+
+    private fun startEntity() {
+        baseEntity = model.entity
+
+        val persistentDataContainer = baseEntity.persistentDataContainer
+
+        toDto().applyOnPersistentDataContainer(persistentDataContainer)
     }
 
     fun switchModelBatch(newBatch: PlantModelBatch<E>){ // for different varieties
@@ -72,7 +78,6 @@ abstract class Plant<E: Entity>(
     fun remove(plugin: PandoFarm) {
         save(plugin)
         model.remove()
-        dynamicListener.stop()
     }
 
     fun onSpawn(){
@@ -89,25 +94,49 @@ abstract class Plant<E: Entity>(
         switchModel()
     }
 
-    open fun harvest(){} // Only HarvestPlants use this method, but it's defined here for it to only be one listener per plant
+    open fun harvest(player: Player){} // Only HarvestPlants use this method, but it's defined here for it to only be one listener per plant
 
     abstract fun save(plugin: PandoFarm)
 
-    abstract fun interact()
+    fun interact(player: Player) {
+        InteractPlantEvent(player, this).callEvent()
+    }
 
-    private fun <C: KClass<out Event>, Z: KClass<out Event>>listener(harvestEventClass: C, interactEventClass: Z): Listener {
-        val listener =  object : Listener {
-            @EventHandler
-            fun onInteract(event: Event){
-                if(harvestEventClass.isInstance(event)){
-                    harvest()
-                }
+    companion object {
 
-                if(interactEventClass.isInstance(event)){
-                    interact()
+        fun Entity.getPlant(plugin: PandoFarm): Plant<out Entity>?{
+            val pdc = this.persistentDataContainer
+
+            val globalPlantRegistry = plugin.getGlobalPlantRegistry()
+            return when {
+                this.isHarvestPlant() -> {
+                    val dto = HarvestPlantDto.fromPersistentDataContainer(pdc) ?: return null
+                    val uuid = UUID.fromString(dto.uniqueIdentifier)
+                    globalPlantRegistry.getPlant(uuid)
                 }
+                this.isStaticPlant() -> {
+                    val dto = StaticPlantDto.fromPersistentDataContainer(pdc) ?: return null
+                    val uuid = UUID.fromString(dto.uniqueIdentifier)
+                    globalPlantRegistry.getPlant(uuid)
+                }
+                else -> null
             }
         }
-        return listener
+
+        fun Entity.isPlant(): Boolean {
+            val pdc = this.persistentDataContainer
+            return this.isHarvestPlant() || this.isStaticPlant()
+        }
+
+        fun Entity.isHarvestPlant(): Boolean {
+            val pdc = this.persistentDataContainer
+            return HarvestPlantDto.fromPersistentDataContainer(pdc) != null
+        }
+
+        fun Entity.isStaticPlant(): Boolean {
+            val pdc = this.persistentDataContainer
+            return StaticPlantDto.fromPersistentDataContainer(pdc) != null
+        }
     }
+
 }
