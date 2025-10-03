@@ -23,12 +23,13 @@ enum class DataNamespacedKey(val key: String) {
     HARVEST_EFFECT_DESCRIPTION("descriptionDto"),
     LOCATION("locationDto"),
     HARVEST_TYPE_NAME("harvestTypeDto"),
-    HARVEST_METHOD("interactionTypeDto"),
-    INTERACTION_METHOD("harvestInteractionTypeDto"),
+    HARVEST_METHOD("harvestMethodDto"),
+    INTERACTION_METHOD("interactionMethodDto"),
     MATURE_AGE("matureAgeDto"),
     ENTITY_CLASS("entityClassDto"),
     HARVEST_TYPE_CUSTOM_MODEL_COMPONENT_STRING("harvestTypeCustomModelComponentStringDto"),
-    MODEL_BATCH("modelBatchDto");
+    MODEL_BATCH("modelBatchDto"),
+    HARVEST_NAME("harvestNameDto");
 
 
     fun toNamespacedKey(): NamespacedKey {

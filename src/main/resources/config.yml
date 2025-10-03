@@ -5,3 +5,12 @@ mysql:
   user: root
   password: ""
   useSSL: false
+
+growth:
+  task-period-ticks: 20 # How often the growth engine task runs
+  age-increment: 1      # How many logical age units to add each tick execution
+
+market:
+  demand:
+    min-multiplier: 0.5          # Floor multiplier for underperforming items
+    max-multiplier: 2.0          # Ceiling multiplier for low supply items

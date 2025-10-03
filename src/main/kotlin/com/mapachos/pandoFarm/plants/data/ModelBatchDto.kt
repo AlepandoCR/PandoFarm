@@ -12,10 +12,13 @@ data class ModelBatchDto(
     val entityClass: String,
 ): ContainerDto {
     fun toModelBatch(): PlantModelBatch<out Entity> {
-        val clazz: Class<out Entity> = try {
-            Class.forName("org.bukkit.entity.$entityClass").asSubclass(Entity::class.java)
-        } catch (e: ClassNotFoundException) {
-            throw IllegalArgumentException("$entityClass Not found", e)
+        val clazz: Class<out Entity> = classCache.getOrPut(entityClass){
+            try {
+                @Suppress("UNCHECKED_CAST")
+                Class.forName("org.bukkit.entity.$entityClass").asSubclass(Entity::class.java) as Class<out Entity>
+            } catch (e: ClassNotFoundException) {
+                throw IllegalArgumentException("$entityClass Not found", e)
+            }
         }
         PlantModelBatchRegistry.getTypedById(modelBatchId, clazz)?.let { return it }
         return PlantModelBatchRegistry.serveID(modelBatchId, clazz)
@@ -27,6 +30,7 @@ data class ModelBatchDto(
     }
 
     companion object{
+        private val classCache = HashMap<String, Class<out Entity>>()
         fun fromPersistentDataContainer(persistentDataContainer: PersistentDataContainer): ModelBatchDto? {
             val modelBatchId = persistentDataContainer.get(DataNamespacedKey.MODEL_BATCH.toNamespacedKey(), org.bukkit.persistence.PersistentDataType.STRING) ?: return null
             val entityClass = persistentDataContainer.get(DataNamespacedKey.ENTITY_CLASS.toNamespacedKey(), org.bukkit.persistence.PersistentDataType.STRING) ?: return null

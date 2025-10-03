@@ -16,6 +16,8 @@ data class Column<T>(
         }
         Int::class.java, Integer::class.java -> "INT"
         Long::class.java, java.lang.Long::class.java -> "BIGINT"
+        Double::class.java, java.lang.Double::class.java -> "DOUBLE"
+        Float::class.java, java.lang.Float::class.java -> "FLOAT"
         Boolean::class.java, java.lang.Boolean::class.java -> "BOOLEAN"
         UUID::class.java -> "VARCHAR(36)"
         ByteArray::class.java -> "BLOB"

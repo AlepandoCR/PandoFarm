@@ -41,4 +41,11 @@ object FarmMarketManager {
             }
         }
     }
+
+    fun reloadDemand(plugin: PandoFarm){
+        val minMult = plugin.config.getDouble("market.demand.min-multiplier", 0.5)
+        val maxMult = plugin.config.getDouble("market.demand.max-multiplier", 2.0)
+        markets.forEach { it.recalculateDemandAdjustments(minMult, maxMult) }
+
+    }
 }

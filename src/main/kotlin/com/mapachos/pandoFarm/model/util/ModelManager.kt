@@ -5,10 +5,10 @@ import org.bukkit.Location
 import org.bukkit.entity.Entity
 
 object ModelManager {
-    val repo = mutableListOf<Model<out Entity>>()
+    val models = mutableListOf<Model<out Entity>>()
 
     fun register(vararg model: Model<out Entity>){
-        repo.addAll(model)
+        models.addAll(model)
     }
 
     inline fun <reified T : Entity> modelOf(name: String, location: Location): Model<T> {
@@ -20,7 +20,7 @@ object ModelManager {
     }
 
     fun Entity.getModel(): Model<out Entity>?{
-        repo.forEach {
+        models.forEach {
             if(it.entity == this){
                 return it
             }
@@ -30,6 +30,12 @@ object ModelManager {
     }
 
     fun unregister(vararg model: Model<out Entity>){
-        repo.removeAll(model.toSet())
+        models.removeAll(model.toSet())
+    }
+
+    fun clear(){
+        val copy = models.toList()
+        copy.forEach { it.remove() }
+        models.clear()
     }
 }

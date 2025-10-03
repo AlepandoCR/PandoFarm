@@ -20,7 +20,7 @@ import java.util.*
 abstract class Plant<E: Entity>(
     val location: Location,
     val plantType: PlantType<E>,
-    var age: Long = 0, // In seconds
+    var age: Long = 0, // In configured logical ticks
     val uniqueIdentifier: UUID = UUID.randomUUID(),
     val matureAge: Long
 ) {
@@ -38,6 +38,8 @@ abstract class Plant<E: Entity>(
     val modelPreset: ModelPreset<E> get() = modelBatch.getModelForStage(stage,location)
 
     fun spawn(location: Location) {
+        // chunk loaded before spawning
+        if(!location.chunk.isLoaded) location.chunk.load()
         onSpawn()
         model = modelPreset.buildModel(location)
 
@@ -102,6 +104,13 @@ abstract class Plant<E: Entity>(
         InteractPlantEvent(player, this).callEvent()
     }
 
+    fun detach(){
+        // Remove only visual/model representation without saving
+        if(this::model.isInitialized){
+            model.remove()
+        }
+    }
+
     companion object {
 
         fun Entity.getPlant(plugin: PandoFarm): Plant<out Entity>?{
@@ -124,7 +133,6 @@ abstract class Plant<E: Entity>(
         }
 
         fun Entity.isPlant(): Boolean {
-            val pdc = this.persistentDataContainer
             return this.isHarvestPlant() || this.isStaticPlant()
         }
 

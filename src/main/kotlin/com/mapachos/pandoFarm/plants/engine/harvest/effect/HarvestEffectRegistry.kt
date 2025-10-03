@@ -5,6 +5,10 @@ import com.mapachos.pandoFarm.plants.engine.harvest.effect.types.NoneHarvestEffe
 object HarvestEffectRegistry {
     val registry = mutableListOf<HarvestEffect>()
 
+    fun start() {
+        loadDefaultEffects()
+    }
+
     fun loadDefaultEffects() {
         register(NoneHarvestEffect)
     }

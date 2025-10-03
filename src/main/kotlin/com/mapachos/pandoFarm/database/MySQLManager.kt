@@ -20,26 +20,29 @@ class MySQLManager(private val plugin: PandoFarm) {
     private val useSSL: Boolean = config.getBoolean("mysql.useSSL")
 
     private var connection: Connection? = null
+    private val connectionLock = Any()
 
     fun connect() {
         if (connection != null && !connection!!.isClosed) return
 
-        val url = "jdbc:mysql://$host:$port/$database?useSSL=$useSSL&autoReconnect=true"
+        val url = "jdbc:mysql://$host:$port/$database?useSSL=$useSSL&autoReconnect=true&characterEncoding=UTF-8&serverTimezone=UTC"
         try {
             connection = DriverManager.getConnection(url, user, password)
             plugin.logger.info("Connected to MySQL!")
         } catch (ex: SQLException) {
+            plugin.logger.severe("Failed to connect to MySQL: ${ex.message}")
             ex.printStackTrace()
         }
     }
 
     fun disconnect() {
-            try {
-                connection?.close()
-                plugin.logger.info("Disconnected from MySQL!")
-            } catch (ex: SQLException) {
-                ex.printStackTrace()
-            }
+        try {
+            connection?.close()
+            plugin.logger.info("Disconnected from MySQL!")
+        } catch (ex: SQLException) {
+            plugin.logger.severe("Failed to disconnect MySQL: ${ex.message}")
+            ex.printStackTrace()
+        }
     }
 
     fun getConnection(): Connection {
@@ -47,5 +50,12 @@ class MySQLManager(private val plugin: PandoFarm) {
             connect()
         }
         return connection!!
+    }
+
+    fun <R> withConnection(block: (Connection) -> R): R {
+        synchronized(connectionLock) {
+            val conn = getConnection()
+            return block(conn)
+        }
     }
 }

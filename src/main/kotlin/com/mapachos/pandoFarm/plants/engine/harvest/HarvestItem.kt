@@ -1,5 +1,6 @@
 package com.mapachos.pandoFarm.plants.engine.harvest
 
+import com.mapachos.pandoFarm.PandoFarm
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
@@ -23,7 +24,14 @@ class HarvestItem(val harvest: Harvest) {
     }
 
     private fun customModelDataComponent(customModelDataComponent: CustomModelDataComponent){
-        customModelDataComponent.strings.add(harvest.harvestType.customModelComponentString)
+        val key = harvest.harvestType.customModelComponentString
+        try {
+            customModelDataComponent.strings.add(key)
+        } catch (ex: UnsupportedOperationException){
+            PandoFarm.getInstance().logger.fine("[HarvestItem] Unable to mutate CustomModelDataComponent.strings for '$key' (immutable list). Skipping.")
+        } catch (ex: Exception){
+            PandoFarm.getInstance().logger.warning("[HarvestItem] Failed to append custom model data string '$key': ${ex.message}")
+        }
     }
 
 
@@ -32,6 +40,8 @@ class HarvestItem(val harvest: Harvest) {
         val meta = item.itemMeta ?: return item
         decorators(meta)
         data(meta)
+
+        item.itemMeta = meta
 
         return item
     }

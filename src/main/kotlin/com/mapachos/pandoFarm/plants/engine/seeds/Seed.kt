@@ -36,7 +36,14 @@ class Seed<I: Material>(
     }
 
     private fun customModelDataComponent(customModelDataComponent: CustomModelDataComponent){
-        customModelDataComponent.strings.add(plant.plantTypeName.replace(" ", "_").lowercase())
+        val key = plant.plantTypeName.replace(" ", "_").lowercase()
+        try {
+            customModelDataComponent.strings.add(key)
+        } catch (_: UnsupportedOperationException){
+            PandoFarm.getInstance().logger.fine("[Seed] Unable to mutate CustomModelDataComponent.strings for '$key' (immutable list). Skipping.")
+        } catch (ex: Exception){
+            PandoFarm.getInstance().logger.warning("[Seed] Failed to append custom model data string '$key': ${ex.message}")
+        }
     }
 
     fun buildItem(): ItemStack{
@@ -44,6 +51,8 @@ class Seed<I: Material>(
         val meta = item.itemMeta ?: return item
         decorators(meta)
         data(meta)
+
+        item.itemMeta = meta
 
         return item
     }

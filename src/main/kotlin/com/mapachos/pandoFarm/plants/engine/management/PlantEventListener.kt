@@ -90,22 +90,22 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
             val action = event.hand
 
             when (action) {
-                ModelInteractionHand.LEFT -> handleAttack(plant, interactionMethod, harvestMethod,player)
+                ModelInteractionHand.LEFT -> handleLeftClick(plant, interactionMethod, harvestMethod,player)
                 ModelInteractionHand.RIGHT -> handleRightClick(plant, interactionMethod, harvestMethod, player)
             }
         }
     }
 
-    private fun handleAttack(
+    private fun handleLeftClick(
         plant: Plant<out Entity>,
         interactionMethod: InteractionMethod,
         harvestMethod: InteractionMethod,
         player: Player
     ) {
-        if(interactionMethod == InteractionMethod.DAMAGE){
+        if(interactionMethod == InteractionMethod.LEFT_CLICK){
             handleInteraction(plant,player)
         }
-        if(harvestMethod == InteractionMethod.DAMAGE){
+        if(harvestMethod == InteractionMethod.LEFT_CLICK){
             handleHarvest(plant,player)
         }
     }
@@ -129,6 +129,6 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     }
 
     private fun handleHarvest(plant: Plant<out Entity>, player: Player) {
-        plant.harvest(player)
+        if(plant.isMature()) plant.harvest(player)
     }
 }

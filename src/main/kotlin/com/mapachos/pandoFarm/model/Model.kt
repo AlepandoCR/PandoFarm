@@ -5,7 +5,9 @@ import com.mapachos.pandoFarm.model.util.ModelManager
 import com.mapachos.pandoFarm.model.util.RendererSupplier
 import com.mapachos.pandoFarm.model.util.RendererSupplier.resize
 import kr.toxicity.model.api.bone.RenderedBone
+import kr.toxicity.model.api.nms.PacketBundler
 import kr.toxicity.model.api.tracker.EntityHideOption
+import kr.toxicity.model.api.tracker.ModelRotation
 import kr.toxicity.model.api.tracker.ModelScaler
 import org.bukkit.Location
 import org.bukkit.World
@@ -33,10 +35,6 @@ class Model<T : Entity>(
 
     fun animate(animationName: String){
         tracker.animate(animationName)
-    }
-
-    fun rotate(){
-        TODO()
     }
 
     fun scale(value: Float){

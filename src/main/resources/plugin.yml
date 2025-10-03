@@ -9,3 +9,6 @@ commands:
   reloadplants:
     description: Reloads the plant configurations.
     usage: /reloadplants
+  seed:
+    description: Gives a seed for the specified plant type.
+    usage: /seed <plantTypeName>

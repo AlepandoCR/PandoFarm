@@ -1,17 +1,8 @@
 package com.mapachos.pandoFarm.model.plant
 
-import com.mapachos.pandoFarm.model.plant.types.TomatoModelBatch
 import org.bukkit.entity.Entity
 
 object PlantModelBatchRegistry {
-
-    init {
-        loadDefaultBatches()
-    }
-
-    fun loadDefaultBatches(){
-        register(TomatoModelBatch)
-    }
 
     val list = mutableListOf<PlantModelBatch<out Entity>>()
 
@@ -35,12 +26,7 @@ object PlantModelBatchRegistry {
     }
 
     fun <E: Entity>serveID(id: String, entityClass: Class<E>): PlantModelBatch<E>{
-        val modelBatch = object: PlantModelBatch<E>() {
-            override val id: String
-                get() = id
-            override val entityClass: Class<E>
-                get() = entityClass
-        }
+        val modelBatch = PlantModelBatch(id, entityClass)
         if(!list.contains(modelBatch)){
             register(modelBatch)
         }

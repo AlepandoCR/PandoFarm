@@ -43,13 +43,12 @@ data class PlayerDto(
     }
 
     fun addExp(amount: Long) {
-        val actualLvl = getExpToNextLevel()
-        if (amount > 0) {
-            farmerExp += amount
-            val newLvl = getExpToNextLevel()
-            if (newLvl < actualLvl) {
-                PlayerLevelUpEvent(this).callEvent()
-            }
+        if (amount <= 0) return
+        val oldLevel = getFarmerLevel()
+        farmerExp += amount
+        val newLevel = getFarmerLevel()
+        if (newLevel > oldLevel) {
+            PlayerLevelUpEvent(this).callEvent()
         }
     }
 

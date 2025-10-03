@@ -1,5 +1,6 @@
 package com.mapachos.pandoFarm.plants.data
 
+import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.database.data.ContainerDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.PlantType
@@ -49,7 +50,8 @@ class PlantTypeDto(
             InteractionMethod.valueOf(harvestMethod),
             InteractionMethod.valueOf(interactionMethod),
             modelBatch.toModelBatch(),
-            matureAge
+            matureAge,
+            harvestName
         )
     }
 
@@ -57,6 +59,8 @@ class PlantTypeDto(
         persistentDataContainer.set(DataNamespacedKey.PLANT_TYPE.toNamespacedKey(), PersistentDataType.STRING, plantTypeName)
         persistentDataContainer.set(DataNamespacedKey.HARVEST_METHOD.toNamespacedKey(), PersistentDataType.STRING, harvestMethod)
         persistentDataContainer.set(DataNamespacedKey.INTERACTION_METHOD.toNamespacedKey(), PersistentDataType.STRING, interactionMethod)
+        persistentDataContainer.set(DataNamespacedKey.MATURE_AGE.toNamespacedKey(), PersistentDataType.LONG, matureAge)
+        harvestName?.let { persistentDataContainer.set(DataNamespacedKey.HARVEST_NAME.toNamespacedKey(), PersistentDataType.STRING, it) }
         modelBatch.applyOnPersistentDataContainer(persistentDataContainer)
     }
 
@@ -67,12 +71,14 @@ class PlantTypeDto(
             val interactionMethod = persistentDataContainer.get(DataNamespacedKey.INTERACTION_METHOD.toNamespacedKey(), PersistentDataType.STRING)
             val entityClass = persistentDataContainer.get(DataNamespacedKey.ENTITY_CLASS.toNamespacedKey(), PersistentDataType.STRING)
             val matureAge = persistentDataContainer.get(DataNamespacedKey.MATURE_AGE.toNamespacedKey(), PersistentDataType.LONG)
+            val harvestName = persistentDataContainer.get(DataNamespacedKey.HARVEST_NAME.toNamespacedKey(), PersistentDataType.STRING)
             val modelBatch = ModelBatchDto.fromPersistentDataContainer(persistentDataContainer)
             if (harvestMethod == null || type  == null || interactionMethod == null || entityClass == null || modelBatch == null || matureAge == null) {
+                PandoFarm.getInstance().logger.fine("PlantTypeDto load failed: harvestMethod=$harvestMethod type=$type interactionMethod=$interactionMethod entityClass=$entityClass modelBatch=$modelBatch matureAge=$matureAge harvestName=$harvestName")
                 return null
             }
 
-            return PlantTypeDto(type, harvestMethod, interactionMethod, modelBatch, matureAge)
+            return PlantTypeDto(type, harvestMethod, interactionMethod, modelBatch, matureAge, harvestName)
         }
     }
 }

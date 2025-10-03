@@ -2,7 +2,7 @@ package com.mapachos.pandoFarm.plants.engine
 
 enum class InteractionMethod() {
     RIGHT_CLICK,
-    DAMAGE;
+    LEFT_CLICK;
 
     companion object {
         fun fromString(name: String): InteractionMethod? {

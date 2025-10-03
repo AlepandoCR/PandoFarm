@@ -6,11 +6,7 @@ import com.mapachos.pandoFarm.plants.engine.GrowthStage
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 
-abstract class PlantModelBatch<E: Entity> {
-
-    abstract val id: String
-
-    abstract val entityClass: Class<E>
+class PlantModelBatch<E: Entity>(val id: String, val entityClass: Class<E>) {
 
      fun seedlingModel(location: Location): ModelPreset<E>{
         return object: ModelPreset<E>{

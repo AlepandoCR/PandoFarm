@@ -6,10 +6,14 @@ import com.mapachos.pandoFarm.database.table.types.HarvestPlantTable
 import com.mapachos.pandoFarm.database.table.types.PlayerDataTable
 import com.mapachos.pandoFarm.database.table.types.StaticPlantTable
 import com.mapachos.pandoFarm.market.engine.FarmMarketManager
+import com.mapachos.pandoFarm.model.util.ModelManager
 import com.mapachos.pandoFarm.plants.engine.PlantTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.harvest.HarvestTypeRegistry
+import com.mapachos.pandoFarm.plants.engine.harvest.effect.HarvestEffectRegistry
 import com.mapachos.pandoFarm.plants.engine.management.GlobalPlantRegistry
+import com.mapachos.pandoFarm.plants.engine.management.PlantEntityListener
 import com.mapachos.pandoFarm.plants.engine.management.PlantEventListener
+import com.mapachos.pandoFarm.plants.engine.seeds.command.SeedCommand
 import com.mapachos.pandoFarm.plants.engine.seeds.listener.SeedListener
 import com.mapachos.pandoFarm.player.management.PlayerDataManager
 import org.bukkit.command.CommandExecutor
@@ -32,18 +36,30 @@ class PandoFarm : JavaPlugin() {
 
     override fun onEnable() {
         pInstance = this
+        saveDefaultConfig()
+        ensureDefaultConfigKeys()
         mySql()
-
         manager()
-
         startRegistries()
-
         listeners()
+        registerCommands()
+    }
+
+    private fun ensureDefaultConfigKeys(){
+        val cfg = config
+        var changed = false
+        if(!cfg.isSet("growth.task-period-ticks")){ cfg.set("growth.task-period-ticks",20); changed=true }
+        if(!cfg.isSet("growth.age-increment")){ cfg.set("growth.age-increment",1); changed=true }
+        if(!cfg.isSet("market.demand.recalc-period-ticks")){ cfg.set("market.demand.recalc-period-ticks", 20L*60L*30L); changed=true } // 30 min
+        if(!cfg.isSet("market.demand.min-multiplier")){ cfg.set("market.demand.min-multiplier",0.5); changed=true }
+        if(!cfg.isSet("market.demand.max-multiplier")){ cfg.set("market.demand.max-multiplier",2.0); changed=true }
+        if(changed) saveConfig()
     }
 
     private fun listeners() {
         registerListener(SeedListener(this))
         registerListener(PlantEventListener(this))
+        registerListener(PlantEntityListener(this))
     }
 
     private fun manager() {
@@ -52,12 +68,18 @@ class PandoFarm : JavaPlugin() {
     }
 
     private fun startRegistries() {
+        HarvestEffectRegistry.start()
         pGlobalPlantRegistry = GlobalPlantRegistry(this)
         HarvestTypeRegistry.start()
         PlantTypeRegistry.start()
     }
 
     override fun onDisable() {
+        FarmMarketManager.saveAllMarkets(this)
+        if(this::pGlobalPlantRegistry.isInitialized){
+            pGlobalPlantRegistry.shutdown(true)
+        }
+        ModelManager.clear()
         mysql.disconnect()
         PlayerDataManager.stop()
     }
@@ -65,7 +87,6 @@ class PandoFarm : JavaPlugin() {
     private fun mySql() {
         mysql = MySQLManager(this)
         mysql.connect()
-
         startTables()
     }
 
@@ -78,6 +99,10 @@ class PandoFarm : JavaPlugin() {
         pPlayerDataTable.createTable()
         pFarmSalesTable = FarmSalesTable(mysql)
         pFarmSalesTable.createTable()
+    }
+
+    private fun registerCommands(){
+        registerCommand("seed", SeedCommand())
     }
 
     fun registerCommand(name: String, executor: CommandExecutor) {
@@ -130,10 +155,7 @@ class PandoFarm : JavaPlugin() {
             if(!this::pInstance.isInitialized){
                 throw IllegalStateException("PandoFarm is not initialized")
             }
-
             return pInstance
         }
-
-
     }
 }
