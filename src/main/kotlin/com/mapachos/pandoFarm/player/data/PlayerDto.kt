@@ -8,7 +8,7 @@ data class PlayerDto(
     var harvestedPlants: Long,
     var plantedPlants: Long,
     var harvestEarnings: Long,
-    private var farmerExp: Long = 0L,
+    var farmerExp: Long = 0L,
 ): Dto {
 
     /**

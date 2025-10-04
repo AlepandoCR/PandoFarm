@@ -13,6 +13,7 @@ import com.mapachos.pandoFarm.plants.engine.event.plant.InteractPlantEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantGrowEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
 import org.bukkit.Location
+import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import java.util.*
@@ -32,7 +33,6 @@ abstract class Plant<E: Entity>(
 
     lateinit var baseEntity: Entity
 
-
     val stage: GrowthStage get() = GrowthStage.fromPlant(this)
 
     val modelPreset: ModelPreset<E> get() = modelBatch.getModelForStage(stage,location)
@@ -48,6 +48,14 @@ abstract class Plant<E: Entity>(
 
     private fun startEntity() {
         baseEntity = model.entity
+
+        if(baseEntity is ArmorStand) {
+            (baseEntity as ArmorStand).isMarker = true
+            (baseEntity as ArmorStand).isSmall = true
+        }
+
+        baseEntity.isInvisible = true
+        baseEntity.isInvulnerable = true
 
         val persistentDataContainer = baseEntity.persistentDataContainer
 

@@ -67,7 +67,6 @@ class Model<T : Entity>(
 
     fun remove(){
         ModelManager.unregister(this)
-        tracker.close()
         tracker.despawn()
         entity.remove()
     }
