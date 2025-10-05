@@ -15,6 +15,8 @@ import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -40,21 +42,25 @@ abstract class Plant<E: Entity>(
     fun spawn(location: Location) {
         // chunk loaded before spawning
         if(!location.chunk.isLoaded) location.chunk.load()
-        onSpawn()
         model = modelPreset.buildModel(location)
-
         startEntity()
+        onSpawn()
     }
 
     private fun startEntity() {
         baseEntity = model.entity
 
+        if(baseEntity is LivingEntity) {
+            val living = baseEntity as LivingEntity
+            living.setAI(false)
+        }
         if(baseEntity is ArmorStand) {
             (baseEntity as ArmorStand).isMarker = true
-            (baseEntity as ArmorStand).isSmall = true
         }
-
+        baseEntity.setNoPhysics(true)
         baseEntity.isInvisible = true
+        baseEntity.isPersistent = true
+        baseEntity.isSilent = true
         baseEntity.isInvulnerable = true
 
         val persistentDataContainer = baseEntity.persistentDataContainer
@@ -66,11 +72,13 @@ abstract class Plant<E: Entity>(
         model.remove()
         modelBatch = newBatch
         model = modelPreset.buildModel(location)
+        startEntity()
     }
 
     fun switchModel(){ // for growth stages
         model.remove()
         model = modelPreset.buildModel(location)
+        startEntity()
     }
 
     fun isMature(): Boolean{
@@ -85,8 +93,8 @@ abstract class Plant<E: Entity>(
         return modelBatch.id
     }
 
-    fun remove(plugin: PandoFarm) {
-        save(plugin)
+    fun remove(plugin: PandoFarm, save: Boolean = true) {
+        if(save) save(plugin)
         model.remove()
     }
 
@@ -104,7 +112,7 @@ abstract class Plant<E: Entity>(
         switchModel()
     }
 
-    open fun harvest(player: Player){} // Only HarvestPlants use this method, but it's defined here for it to only be one listener per plant
+    open fun harvest(player: Player){}
 
     abstract fun save(plugin: PandoFarm)
 

@@ -9,6 +9,8 @@ import kr.toxicity.model.api.nms.PacketBundler
 import kr.toxicity.model.api.tracker.EntityHideOption
 import kr.toxicity.model.api.tracker.ModelRotation
 import kr.toxicity.model.api.tracker.ModelScaler
+import kr.toxicity.model.api.tracker.TrackerModifier
+import kr.toxicity.model.api.util.function.BonePredicate
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Display.Billboard
@@ -29,6 +31,7 @@ class Model<T : Entity>(
     private val originalModelScale = tracker.scaler().scale(tracker)
 
     init {
+        entity.isInvisible = true
         ModelManager.register(this)
     }
 
@@ -40,6 +43,7 @@ class Model<T : Entity>(
     fun scale(value: Float){
         scaleWithEntity(value)
     }
+
 
     fun resetScale(){
         tracker.scaler(ModelScaler.value(originalModelScale))

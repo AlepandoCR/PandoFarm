@@ -18,7 +18,6 @@ class PlantRegistry(
 
     fun removePlant(plant: Plant<out Entity>) {
         registry.remove(plant)
-        plant.remove(plugin)
     }
 
     fun getPlantsOnWorld(world: World): List<Plant<out Entity>> {

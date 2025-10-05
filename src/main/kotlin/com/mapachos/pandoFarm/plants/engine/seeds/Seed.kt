@@ -1,20 +1,20 @@
 package com.mapachos.pandoFarm.plants.engine.seeds
 
-import com.google.common.collect.Multimap
 import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.plants.data.PlantTypeDto
+import kr.toxicity.model.api.BetterModel
+import kr.toxicity.model.api.data.renderer.RendererGroup
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.attribute.Attribute
-import org.bukkit.attribute.AttributeModifier
 import org.bukkit.entity.Entity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.components.CustomModelDataComponent
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
+
 
 class Seed<I: Material>(
     val material: I,
@@ -46,8 +46,23 @@ class Seed<I: Material>(
         }
     }
 
+    fun getModelItem(modelName: String): ItemStack {
+        val renderer = BetterModel.modelOrNull(modelName)
+
+        if (renderer != null) {
+            val firstGroup: RendererGroup = renderer.rendererGroupMap.values.iterator().next()
+            val transformedItem = firstGroup.itemStack
+            val itemStack = transformedItem.itemStack()
+
+
+            return  itemStack.withType(material)
+        }
+
+        return ItemStack(material)
+    }
+
     fun buildItem(): ItemStack{
-        val item = ItemStack(material)
+        val item = getModelItem("${plant.modelBatch.modelBatchId}_seedling")
         val meta = item.itemMeta ?: return item
         decorators(meta)
         data(meta)

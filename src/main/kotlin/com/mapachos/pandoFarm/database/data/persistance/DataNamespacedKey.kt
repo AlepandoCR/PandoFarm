@@ -17,6 +17,7 @@ enum class DataNamespacedKey(val key: String) {
     MATERIAL("materialDto"),
     QUALITY("qualityDto"),
     UUID("uuidDto"),
+    PLANT_TIME_STAMP("plantTimeStampDto"),
     PLANT_TYPE("plantTypeDto"),
     HARVEST_EFFECT_NAME("harvestEffectNameDto"),
     AGE("ageDto"),

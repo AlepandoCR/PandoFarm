@@ -1,6 +1,7 @@
 package com.mapachos.pandoFarm.plants.data
 
 import com.mapachos.pandoFarm.database.data.LocationDto
+import com.mapachos.pandoFarm.database.data.TimeStampDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.engine.StaticPlant
 import org.bukkit.entity.Entity
@@ -12,11 +13,13 @@ class StaticPlantDto(
     plantType: PlantTypeDto,
     age: Long,
     location: LocationDto,
+    timeStamp: TimeStampDto,
 ): PlantDto(
     uniqueIdentifier,
     plantType,
     age,
-    location
+    location,
+    timeStamp
 ) {
 
     fun toStaticPlant(): StaticPlant<out Entity> {
@@ -28,6 +31,7 @@ class StaticPlantDto(
         persistentDataContainer.set(DataNamespacedKey.AGE.toNamespacedKey(), PersistentDataType.LONG, age)
         location.applyOnPersistentDataContainer(persistentDataContainer)
         plantType.applyOnPersistentDataContainer(persistentDataContainer)
+        timeStamp.applyOnPersistentDataContainer(persistentDataContainer)
     }
 
     companion object {
@@ -36,10 +40,11 @@ class StaticPlantDto(
             val age = persistentDataContainer.get(DataNamespacedKey.AGE.toNamespacedKey(), PersistentDataType.LONG)
             val location = LocationDto.fromPersistentDataContainer(persistentDataContainer)
             val plantType = PlantTypeDto.fromPersistentDataContainer(persistentDataContainer)
+            val timeStamp = TimeStampDto.fromPersistentDataContainer(persistentDataContainer)
 
-            if (uuidString.isNullOrBlank() || plantType == null || age == null || location == null) return null
+            if (uuidString.isNullOrBlank() || plantType == null || age == null || location == null || timeStamp == null) return null
 
-            return StaticPlantDto(uuidString, plantType, age, location)
+            return StaticPlantDto(uuidString, plantType, age, location, timeStamp)
         }
     }
 }

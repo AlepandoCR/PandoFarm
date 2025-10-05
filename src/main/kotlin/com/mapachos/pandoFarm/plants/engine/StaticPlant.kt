@@ -2,6 +2,7 @@ package com.mapachos.pandoFarm.plants.engine
 
 import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.database.data.LocationDto.Companion.toDto
+import com.mapachos.pandoFarm.database.data.TimeStampDto
 import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.data.PlantDto
 import com.mapachos.pandoFarm.plants.data.StaticPlantDto
@@ -23,7 +24,7 @@ class StaticPlant<E: Entity>(
     matureAge
     ) {
     override fun toDto(): PlantDto {
-        return StaticPlantDto(uniqueIdentifier.toString(), plantType.toDto(), age, location.toDto())
+        return StaticPlantDto(uniqueIdentifier.toString(), plantType.toDto(), age, location.toDto(), TimeStampDto.now())
     }
 
     override fun save(plugin: PandoFarm) {

@@ -1,6 +1,7 @@
 package com.mapachos.pandoFarm.plants.data
 
 import com.mapachos.pandoFarm.database.data.LocationDto
+import com.mapachos.pandoFarm.database.data.TimeStampDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.engine.HarvestPlant
 import com.mapachos.pandoFarm.plants.engine.harvest.data.HarvestDto
@@ -13,10 +14,12 @@ class HarvestPlantDto(
     plantType: PlantTypeDto,
     age: Long,
     location: LocationDto,
+    timeStamp: TimeStampDto,
     val harvestDto: HarvestDto,
 ): PlantDto(uniqueIdentifier, plantType,
     age,
-    location
+    location,
+    timeStamp
 ) {
     fun toHarvestPlant(): HarvestPlant<out Entity> {
         return HarvestPlant.load(this)
@@ -28,6 +31,7 @@ class HarvestPlantDto(
         location.applyOnPersistentDataContainer(persistentDataContainer)
         harvestDto.applyOnPersistentDataContainer(persistentDataContainer)
         plantType.applyOnPersistentDataContainer(persistentDataContainer)
+        timeStamp.applyOnPersistentDataContainer(persistentDataContainer)
     }
 
     companion object {
@@ -37,10 +41,11 @@ class HarvestPlantDto(
             val location = LocationDto.fromPersistentDataContainer(persistentDataContainer)
             val harvestDto = HarvestDto.fromPersistentDataContainer(persistentDataContainer)
             val plantType = PlantTypeDto.fromPersistentDataContainer(persistentDataContainer)
+            val timeStamp = TimeStampDto.fromPersistentDataContainer(persistentDataContainer)
 
-            if (uuidString.isNullOrBlank() || plantType == null || age == null || location == null || harvestDto == null ) return null
+            if (uuidString.isNullOrBlank() || plantType == null || age == null || location == null || harvestDto == null || timeStamp == null) return null
 
-            return HarvestPlantDto(uuidString, plantType, age, location, harvestDto)
+            return HarvestPlantDto(uuidString, plantType, age, location, timeStamp, harvestDto)
         }
     }
 }

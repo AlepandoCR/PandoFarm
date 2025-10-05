@@ -3,6 +3,7 @@ package com.mapachos.pandoFarm.plants.engine.seeds.listener
 import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.plants.engine.seeds.Seed
 import com.mapachos.pandoFarm.plants.engine.seeds.event.PlaceSeedEvent
+import com.mapachos.pandoFarm.util.hasPlant
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -29,6 +30,8 @@ class SeedListener(val plugin: PandoFarm): Listener {
 
         val seed = Seed.fromItem(item) ?: return
         val interactedLocation = above.location.add(0.5,0.0,0.5)
+
+        if(interactedLocation.hasPlant(plugin)) return
 
         val chunk = interactedLocation.chunk
         if(!chunk.isLoaded) chunk.load()

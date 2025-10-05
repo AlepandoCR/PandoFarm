@@ -2,6 +2,7 @@ package com.mapachos.pandoFarm.util
 
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.database.data.LocationDto.Companion.toDto
 import com.mapachos.pandoFarm.player.data.PlayerDto
 import com.mapachos.pandoFarm.player.management.PlayerDataManager
 import com.mapachos.pandoFarm.util.command.AutoCommand
@@ -25,6 +26,10 @@ import java.io.Serializable
 
 private val plugin = PandoFarm.getInstance()
 
+fun Location.hasPlant(plugin: PandoFarm): Boolean{
+    return plugin.getGlobalPlantRegistry().getAllPlants().any { it.location.toDto() == this.toDto() }
+}
+
 fun Player.farmData(): PlayerDto{
     return PlayerDataManager.getPlayerData(this)
 }
@@ -40,25 +45,44 @@ inline fun <reified T: Serializable> autoYml(name: String, dataFolder: DataFolde
     AutoYML.create(T::class, name, dataFolder, header)
 
 fun async(handler: () -> Unit) {
+    if (!plugin.isEnabled) {
+        handler()
+        return
+    }
     Bukkit.getScheduler().runTaskAsynchronously(plugin, handler)
 }
 
 
 fun sync(handler: () -> Unit) {
+    if (!plugin.isEnabled) {
+        handler()
+        return
+    }
     Bukkit.getScheduler().runTask(plugin, handler)
 }
 
 
 fun later(handler: () -> Unit, delay: Long) {
+    if (!plugin.isEnabled) {
+        return
+    }
     Bukkit.getScheduler().runTaskLater(plugin, handler,delay)
 }
 
 fun timer(handler: () -> Unit, delay: Long, period: Long): BukkitTask {
+    if (!plugin.isEnabled) {
+        handler()
+        throw IllegalStateException("Plugin is not enabled; cannot schedule repeating task. This is already handled by running the handler immediately.")
+    }
     val runnable = Bukkit.getScheduler().runTaskTimer(plugin, handler,delay,period)
     return runnable
 }
 
 fun BukkitRunnable.timer(delay: Long,period: Long){
+    if (!plugin.isEnabled) {
+        this.run()
+        return
+    }
     this.runTaskTimer(plugin,delay,period)
 }
 
@@ -115,5 +139,3 @@ fun Color.toNamedTextColor(): NamedTextColor {
 
     return NamedTextColor.nearestTo(adventureTextColor)
 }
-
-
