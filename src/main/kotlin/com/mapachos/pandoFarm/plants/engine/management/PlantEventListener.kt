@@ -8,6 +8,8 @@ import com.mapachos.pandoFarm.plants.engine.Plant.Companion.isPlant
 import com.mapachos.pandoFarm.plants.engine.event.plant.HarvestPlantEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
 import com.mapachos.pandoFarm.plants.engine.seeds.event.PlaceSeedEvent
+import com.mapachos.pandoFarm.player.culling.plant.PlayerPlantLookManager
+import com.mapachos.pandoFarm.player.culling.plant.CullingVisibilityManager
 import com.mapachos.pandoFarm.util.farmData
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent
 import kr.toxicity.model.api.event.ModelInteractAtEvent
@@ -19,11 +21,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.world.ChunkLoadEvent
-import org.bukkit.event.world.ChunkUnloadEvent
 
 class PlantEventListener(val plugin: PandoFarm): Listener {
 
@@ -32,10 +31,14 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         val world = event.player.world
-        plugin.logger.info("[PlantEventListener] PlayerQuit: ${event.player.name} from world=${world.name}, playersLeft=${world.players.size - 1}")
-        if (world.players.isEmpty() || isPlayerAlone(world, event.player)) {
-            plugin.logger.info("[PlantEventListener] Removing plants on world=${world.name} due to last player leaving")
-            globalPlantRegistry.removePlantsOnWorld(world)
+        val remaining = world.players.count { it != event.player }
+        plugin.logger.info("[PlantEventListener] PlayerQuit: ${event.player.name} from world=${world.name}, remaining=$remaining")
+        // Notificar culling manager y detener engine
+        CullingVisibilityManager.onPlayerQuit(event.player)
+        PlayerPlantLookManager.stopFor(event.player)
+        if (remaining == 0) {
+            plugin.logger.info("[PlantEventListener] Hiding plants on world=${world.name} (no players left)")
+            globalPlantRegistry.hidePlantsOnWorld(world)
         }
     }
 
@@ -43,10 +46,9 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val world = event.player.world
         plugin.logger.info("[PlantEventListener] PlayerJoin: ${event.player.name} to world=${world.name}, playersNow=${world.players.size}")
-        if (isPlayerAlone(world, event.player)) {
-            plugin.logger.info("[PlantEventListener] Loading plants on world=${world.name} (first player present)")
-            globalPlantRegistry.loadPlantsOnWorld(world)
-        }
+        PlayerPlantLookManager.startFor(event.player)
+        // Always attempt to load plants; load method skips already-loaded plants
+        globalPlantRegistry.loadPlantsOnWorld(world)
     }
 
     private fun isPlayerAlone(world: World, player: Player): Boolean =
@@ -56,33 +58,18 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
     fun onPlayerChangedWorld(event: PlayerChangedWorldEvent) {
         val fromWorld = event.from
         val toWorld = event.player.world
-        plugin.logger.info("[PlantEventListener] PlayerChangedWorld: ${event.player.name} from=${fromWorld.name} to=${toWorld.name}")
+        val remainingFrom = fromWorld.players.count { it != event.player }
+        plugin.logger.info("[PlantEventListener] PlayerChangedWorld: ${event.player.name} from=${fromWorld.name} to=${toWorld.name} remainingFrom=$remainingFrom")
 
-        if (fromWorld.players.isEmpty() || isPlayerAlone(fromWorld, event.player)) {
-            plugin.logger.info("[PlantEventListener] Removing plants on world=${fromWorld.name} (last player left)")
-            globalPlantRegistry.removePlantsOnWorld(fromWorld)
+        if (remainingFrom == 0) {
+            plugin.logger.info("[PlantEventListener] Hiding plants on world=${fromWorld.name} (no players left)")
+            globalPlantRegistry.hidePlantsOnWorld(fromWorld)
         }
 
-        // Load plants in the new world if the player is alone, if not, plants should already be loaded
-        if(isPlayerAlone(toWorld, event.player)) {
-            plugin.logger.info("[PlantEventListener] Loading plants on world=${toWorld.name} (first player present)")
-            globalPlantRegistry.loadPlantsOnWorld(toWorld)
-        }
+        // Restart look engine to reset state on world change and load plants in the new world
+        PlayerPlantLookManager.restartFor(event.player)
+        globalPlantRegistry.loadPlantsOnWorld(toWorld)
     }
-
-//    @EventHandler
-//    fun onChunkUnload(event: ChunkUnloadEvent) {
-//        val chunk = event.chunk
-//        plugin.logger.info("[PlantEventListener] ChunkUnload: world=${chunk.world.name} chunk=(${chunk.x},${chunk.z})")
-//        globalPlantRegistry.removePlantsOnChunk(chunk)
-//    }
-//
-//    @EventHandler
-//    fun onChunkLoad(event: ChunkLoadEvent) {
-//        val chunk = event.chunk
-//        plugin.logger.info("[PlantEventListener] ChunkLoad: world=${chunk.world.name} chunk=(${chunk.x},${chunk.z})")
-//        globalPlantRegistry.loadPlantsOnChunk(chunk)
-//    }
 
     /**
      * When a plant is spawned in the world, add it its respective PlantRegistry
@@ -105,7 +92,7 @@ class PlantEventListener(val plugin: PandoFarm): Listener {
         val harvester = event.player
         val plant = event.plant
         val harvest = plant.harvest
-        plugin.getGlobalPlantRegistry().removePlant(plant)
+        plant.remove(plugin)
         harvester.farmData().harvestedPlants++
         harvester.inventory.addItem(harvest.harvestItem.buildItem())
 

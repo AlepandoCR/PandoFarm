@@ -4,9 +4,12 @@ import com.mapachos.pandoFarm.model.preset.ModelPreset
 import com.mapachos.pandoFarm.model.util.ModelManager
 import com.mapachos.pandoFarm.model.util.RendererSupplier
 import com.mapachos.pandoFarm.model.util.RendererSupplier.resize
+import com.mapachos.pandoFarm.util.hide
+import com.mapachos.pandoFarm.util.show
 import kr.toxicity.model.api.bone.RenderedBone
 import kr.toxicity.model.api.nms.PacketBundler
 import kr.toxicity.model.api.tracker.EntityHideOption
+import kr.toxicity.model.api.tracker.EntityTrackerRegistry
 import kr.toxicity.model.api.tracker.ModelRotation
 import kr.toxicity.model.api.tracker.ModelScaler
 import kr.toxicity.model.api.tracker.TrackerModifier
@@ -27,7 +30,7 @@ class Model<T : Entity>(
     private val renderer = RendererSupplier.get(name)
     val world: World = location.world
     val entity: T = world.spawn(location, entityClass)
-    val tracker = renderer.create(entity)
+    val tracker = renderer.create(entity, TrackerModifier.DEFAULT)
     private val originalModelScale = tracker.scaler().scale(tracker)
 
     init {
@@ -35,6 +38,20 @@ class Model<T : Entity>(
         ModelManager.register(this)
     }
 
+    fun refresh(){
+        val registry = EntityTrackerRegistry.registry(entity)
+        registry?.refresh()
+    }
+
+    fun hide(player: Player){
+        tracker.hide(player)
+        entity.hide(player)
+    }
+
+    fun show(player: Player){
+        tracker.show(player)
+        entity.show(player)
+    }
 
     fun animate(animationName: String){
         tracker.animate(animationName)
@@ -75,9 +92,6 @@ class Model<T : Entity>(
         entity.remove()
     }
 
-    fun hide(player: Player){
-        tracker.hide(player)
-    }
 
     fun pause(value: Boolean){
         tracker.pause(value)

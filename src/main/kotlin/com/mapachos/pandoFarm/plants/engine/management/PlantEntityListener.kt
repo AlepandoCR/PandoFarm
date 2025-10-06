@@ -15,6 +15,6 @@ class PlantEntityListener(private val plugin: PandoFarm): Listener {
         if(!entity.isPlant()) return
         val plant = entity.getPlant(plugin) ?: return
         event.drops.clear()
-        plugin.getGlobalPlantRegistry().removePlant(plant)
+        plant.remove(plugin)
     }
 }

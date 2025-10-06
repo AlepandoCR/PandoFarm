@@ -51,7 +51,7 @@ object HarvestTypeRegistry {
         reload()
         sender.sendMessage("§3Harvest types reloaded. (${harvests.size})")
         true
-    }, onlyOp = true)
+    }, onlyOp = true, minArgs = 0, maxArgs = 0, usage = "/reloadharvests")
 
     private fun loadFromFolder() {
         val folder = getHarvestDataFolder()

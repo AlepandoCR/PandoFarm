@@ -4,6 +4,7 @@ import com.mapachos.pandoFarm.database.data.LocationDto
 import com.mapachos.pandoFarm.database.data.TimeStampDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.engine.StaticPlant
+import com.mapachos.pandoFarm.plants.engine.harvest.data.HarvestDto
 import org.bukkit.entity.Entity
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -36,6 +37,10 @@ class StaticPlantDto(
 
     companion object {
         fun fromPersistentDataContainer(persistentDataContainer: PersistentDataContainer): StaticPlantDto? {
+            // If harvest data is present, this is not a static plant
+            val harvestDto = HarvestDto.fromPersistentDataContainer(persistentDataContainer)
+            if (harvestDto != null) return null
+
             val uuidString = persistentDataContainer.get(DataNamespacedKey.UUID.toNamespacedKey(), PersistentDataType.STRING)
             val age = persistentDataContainer.get(DataNamespacedKey.AGE.toNamespacedKey(), PersistentDataType.LONG)
             val location = LocationDto.fromPersistentDataContainer(persistentDataContainer)

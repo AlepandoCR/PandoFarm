@@ -2,8 +2,8 @@ mysql:
   host: localhost
   port: 3306
   database: pando_farm
-  user: root
-  password: ""
+  user: pando
+  password: "gZJ0dYJj16ZzL2e6"
   useSSL: false
 
 growth:
@@ -14,3 +14,8 @@ market:
   demand:
     min-multiplier: 0.5          # Floor multiplier for underperforming items
     max-multiplier: 2.0          # Ceiling multiplier for low supply items
+
+# Player look engine configuration (PlantCullingEngine)
+look:
+  scan-radius: 200.0   # Scan radius in blocks to consider plant visibility
+  period-ticks: 5     # Task period in ticks for checking visibility

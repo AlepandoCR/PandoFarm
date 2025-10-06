@@ -2,6 +2,7 @@ package com.mapachos.pandoFarm.plants.engine.management
 
 import com.mapachos.pandoFarm.util.timer
 import com.mapachos.pandoFarm.util.timerRunnable
+import com.mapachos.pandoFarm.util.config.ConfigPath
 import org.bukkit.scheduler.BukkitRunnable
 
 class GrowthEngine(val plantRegistry: PlantRegistry) {
@@ -9,8 +10,8 @@ class GrowthEngine(val plantRegistry: PlantRegistry) {
     var ticks = 0
     private val plugin get() = plantRegistry.plugin
 
-    private val taskPeriod: Long get() = plugin.config.getLong("growth.task-period-ticks").takeIf { it > 0 } ?: 20L
-    private val ageIncrement: Long get() = plugin.config.getLong("growth.age-increment").takeIf { it > 0 } ?: 1L
+    private val taskPeriod: Long get() = plugin.config.getLong(ConfigPath.GROWTH_TASK_PERIOD_TICKS.path).takeIf { it > 0 } ?: 20L
+    private val ageIncrement: Long get() = plugin.config.getLong(ConfigPath.GROWTH_AGE_INCREMENT.path).takeIf { it > 0 } ?: 1L
 
     init{
         task = runnable()

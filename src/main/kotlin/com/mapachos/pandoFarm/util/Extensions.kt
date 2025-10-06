@@ -37,8 +37,11 @@ fun Player.farmData(): PlayerDto{
 fun autoCommand(
     handler: (CommandSender, Command, String, Array<String>) -> Boolean,
     completions: List<String> = emptyList(),
-    onlyOp: Boolean = false
-): AutoCommand = AutoCommand(handler, completions, onlyOp)
+    onlyOp: Boolean = false,
+    minArgs: Int = 0,
+    maxArgs: Int? = null,
+    usage: String? = null
+): AutoCommand = AutoCommand(handler, completions, onlyOp, minArgs, maxArgs, usage)
 
 
 inline fun <reified T: Serializable> autoYml(name: String, dataFolder: DataFolder,header: String? = null): AutoYML<T> =
@@ -101,6 +104,10 @@ fun distance(p1: Location, p2: Location): Double{
 
 fun Entity.hide(player: Player){
     player.hideEntity(plugin,this)
+}
+
+fun Entity.show(player: Player){
+    player.showEntity(plugin,this)
 }
 
 fun Entity.hideAllExcept(player: Player){

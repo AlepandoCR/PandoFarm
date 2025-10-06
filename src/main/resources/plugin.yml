@@ -12,3 +12,6 @@ commands:
   seed:
     description: Gives a seed for the specified plant type.
     usage: /seed <plantTypeName>
+  testplants:
+    description: Genera una cantidad de plantas en cuadrado de 100x100 por capas.
+    usage: /testplants <cantidad|deleteall>

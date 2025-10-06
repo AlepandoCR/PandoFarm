@@ -1,6 +1,7 @@
 package com.mapachos.pandoFarm.plants.engine.management
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.player.culling.plant.CullingVisibilityManager
 import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.data.HarvestPlantDto
 import com.mapachos.pandoFarm.plants.data.StaticPlantDto
@@ -8,7 +9,6 @@ import com.mapachos.pandoFarm.plants.engine.GrowthStage
 import com.mapachos.pandoFarm.plants.engine.HarvestPlant
 import com.mapachos.pandoFarm.plants.engine.Plant
 import com.mapachos.pandoFarm.plants.engine.StaticPlant
-import com.mapachos.pandoFarm.util.later
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.entity.Entity
@@ -50,7 +50,6 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
     fun getPlantsByStage(stage: GrowthStage): List<Plant<out Entity>> = allPlantsMap.values.filter { it.stage == stage }
 
     fun registerPlant(plant: Plant<out Entity>) {
-        // Register plant into the world registry and global map
         val worldRegistry = getRegistryForWorld(plant.world)
         if (!worldRegistry.registry.contains(plant)) {
             worldRegistry.addPlant(plant)
@@ -59,17 +58,53 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
         plugin.logger.info("[GlobalPlantRegistry] Registered plant id=${plant.uniqueIdentifier} type=${plant.plantType.name} world=${plant.world.name} at=(${plant.location.blockX},${plant.location.blockY},${plant.location.blockZ})")
     }
 
-    fun removePlant(plant: Plant<out Entity>, registry: PlantRegistry? = null) {
-        // Persist and remove visual entity
-        plant.remove(plugin)
+    /**
+     * Hide a plant from the world and unregister it, but DO NOT delete from DB.
+     */
+    fun hidePlant(plant: Plant<out Entity>, registry: PlantRegistry? = null) {
+        // Persist current state and remove visual entity
+        plant.holdAndSave(plugin)
 
         // Remove from global maps
         allPlantsMap.remove(plant.uniqueIdentifier)
 
-        // Remove from world registry without calling remove() again
+        // Remove from world registry
         val worldRegistry = registry ?: getRegistryForWorld(plant.world)
         worldRegistry.removePlant(plant)
-        plugin.logger.info("[GlobalPlantRegistry] Removed plant id=${plant.uniqueIdentifier} type=${plant.plantType.name} world=${plant.world.name} at=(${plant.location.blockX},${plant.location.blockY},${plant.location.blockZ})")
+        plugin.logger.info("[GlobalPlantRegistry] Hidden plant id=${plant.uniqueIdentifier} type=${plant.plantType.name} world=${plant.world.name} at=(${plant.location.blockX},${plant.location.blockY},${plant.location.blockZ})")
+    }
+
+    /**
+     * Permanently remove a plant: hide/unregister and DELETE from DB.
+     */
+    fun removePlant(plant: Plant<out Entity>, registry: PlantRegistry? = null) {
+        // Do not save state when deleting from DB, just remove visuals
+        plant.hold()
+        // Notify culling manager to purge visibility state for this plant
+        CullingVisibilityManager.onPlantRemoved(plant)
+
+        // Remove from global maps
+        allPlantsMap.remove(plant.uniqueIdentifier)
+
+        // Remove from world registry
+        val worldRegistry = registry ?: getRegistryForWorld(plant.world)
+        worldRegistry.removePlant(plant)
+
+        // Delete from DB depending on type
+        when (plant) {
+            is StaticPlant -> plugin.getStaticPlantTable().deleteById(plant.uniqueIdentifier)
+            is HarvestPlant -> plugin.getHarvestPlantTable().deleteById(plant.uniqueIdentifier)
+            else -> {
+                // Fallback by DTO type if needed
+                try {
+                    when (plant.toDto()) {
+                        is StaticPlantDto -> plugin.getStaticPlantTable().deleteById(plant.uniqueIdentifier)
+                        is HarvestPlantDto -> plugin.getHarvestPlantTable().deleteById(plant.uniqueIdentifier)
+                    }
+                } catch (_: Exception) {}
+            }
+        }
+        plugin.logger.info("[GlobalPlantRegistry] Removed plant id=${plant.uniqueIdentifier} type=${plant.plantType.name} world=${plant.world.name} at=(${plant.location.blockX},${plant.location.blockY},${plant.location.blockZ}) and deleted from DB")
     }
 
     fun loadPlantsOnWorld(world: World) {
@@ -78,11 +113,8 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
         staticDtos.forEach { dto ->
             val plant = StaticPlant.load(dto)
             if (allPlantsMap[plant.uniqueIdentifier] == null) {
-                // Only spawn; registration is handled by PlantSpawnEvent listener
-                later({
-                    plant.spawn(dto.location.toLocation())
-                    plugin.logger.info("[GlobalPlantRegistry] Spawned static plant id=${plant.uniqueIdentifier} at=(${dto.location.x},${dto.location.y},${dto.location.z}) chunk=(${dto.location.toLocation().chunk.x},${dto.location.toLocation().chunk.z})")
-                }, 25L)
+                plant.spawn(dto.location.toLocation())
+                plugin.logger.info("[GlobalPlantRegistry] Spawned static plant id=${plant.uniqueIdentifier} at=(${dto.location.x},${dto.location.y},${dto.location.z}) chunk=(${dto.location.toLocation().chunk.x},${dto.location.toLocation().chunk.z})")
             } else {
                 plugin.logger.info("[GlobalPlantRegistry] Skipped spawn (already loaded) static plant id=${plant.uniqueIdentifier}")
             }
@@ -92,29 +124,25 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
         harvestDtos.forEach { dto ->
             val plant = HarvestPlant.load(dto)
             if (allPlantsMap[plant.uniqueIdentifier] == null) {
-                // Only spawn; registration is handled by PlantSpawnEvent listener
-                later({
-                    plant.spawn(dto.location.toLocation())
-                    plugin.logger.info("[GlobalPlantRegistry] Spawned harvest plant id=${plant.uniqueIdentifier} at=(${dto.location.x},${dto.location.y},${dto.location.z}) chunk=(${dto.location.toLocation().chunk.x},${dto.location.toLocation().chunk.z})")
-                },25L)
-
+                plant.spawn(dto.location.toLocation())
+                plugin.logger.info("[GlobalPlantRegistry] Spawned harvest plant id=${plant.uniqueIdentifier} at=(${dto.location.x},${dto.location.y},${dto.location.z}) chunk=(${dto.location.toLocation().chunk.x},${dto.location.toLocation().chunk.z})")
             } else {
                 plugin.logger.info("[GlobalPlantRegistry] Skipped spawn (already loaded) harvest plant id=${plant.uniqueIdentifier}")
             }
         }
     }
 
-    fun removePlantsOnChunk(chunk: Chunk) {
+    fun hidePlantsOnChunk(chunk: Chunk) {
         val world = chunk.world
         val registry = plantRegistries.find { it.world == world }
         if (registry != null) {
             val plantsToRemove = registry.registry.filter { it.location.chunk == chunk }
-            plugin.logger.info("[GlobalPlantRegistry] Removing ${plantsToRemove.size} plants on chunk=(${chunk.x},${chunk.z}) world=${world.name}")
+            plugin.logger.info("[GlobalPlantRegistry] Hiding ${plantsToRemove.size} plants on chunk=(${chunk.x},${chunk.z}) world=${world.name}")
             plantsToRemove.forEach {
-                removePlant(it, registry)
+                hidePlant(it, registry)
             }
         } else {
-            plugin.logger.info("[GlobalPlantRegistry] No registry found for world=${world.name} when removing chunk=(${chunk.x},${chunk.z})")
+            plugin.logger.info("[GlobalPlantRegistry] No registry found for world=${world.name} when hiding chunk=(${chunk.x},${chunk.z})")
         }
     }
 
@@ -148,14 +176,14 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
         }
     }
 
-    fun removePlantsOnWorld(world: World) {
+    fun hidePlantsOnWorld(world: World) {
         val registry = plantRegistries.find { it.world == world }
         if (registry != null) {
             val plantsToRemove = registry.registry.filter { it.world == world }
-            plugin.logger.info("[GlobalPlantRegistry] Removing ${plantsToRemove.size} plants on world=${world.name}")
-            plantsToRemove.forEach { removePlant(it, registry) }
+            plugin.logger.info("[GlobalPlantRegistry] Hiding ${plantsToRemove.size} plants on world=${world.name}")
+            plantsToRemove.forEach { hidePlant(it, registry) }
         } else {
-            plugin.logger.info("[GlobalPlantRegistry] No registry found for world=${world.name} when removing all")
+            plugin.logger.info("[GlobalPlantRegistry] No registry found for world=${world.name} when hiding all")
         }
     }
 
@@ -167,7 +195,6 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
 
     fun shutdown(save: Boolean = true){
         if(save){
-            // Batch save
             val staticDtos = collectStaticDtos()
             val harvestDtos = collectHarvestDtos()
             plugin.logger.info("[GlobalPlantRegistry] Shutdown: saving static=${staticDtos.size}, harvest=${harvestDtos.size}")
@@ -182,4 +209,5 @@ class GlobalPlantRegistry(val plugin: PandoFarm) {
         allPlantsMap.clear()
         plugin.logger.info("[GlobalPlantRegistry] Shutdown complete")
     }
+
 }

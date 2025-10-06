@@ -8,6 +8,7 @@ import com.mapachos.pandoFarm.plants.data.HarvestPlantDto
 import com.mapachos.pandoFarm.plants.data.PlantDto
 import com.mapachos.pandoFarm.plants.engine.event.plant.HarvestPlantEvent
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
+import com.mapachos.pandoFarm.util.config.ConfigPath
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -73,8 +74,8 @@ class HarvestPlant<E: Entity>(
 
             // Translate real time to logical age increments based on config
             val plugin = PandoFarm.getInstance()
-            val taskPeriodTicks = plugin.config.getLong("growth.task-period-ticks").takeIf { it > 0 } ?: 20L
-            val ageIncrement = plugin.config.getLong("growth.age-increment").takeIf { it > 0 } ?: 1L
+            val taskPeriodTicks = plugin.config.getLong(ConfigPath.GROWTH_TASK_PERIOD_TICKS.path).takeIf { it > 0 } ?: 20L
+            val ageIncrement = plugin.config.getLong(ConfigPath.GROWTH_AGE_INCREMENT.path).takeIf { it > 0 } ?: 1L
             val periodMillis = taskPeriodTicks * 50L
             if (periodMillis <= 0) return currentAge
 

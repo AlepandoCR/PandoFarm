@@ -82,7 +82,7 @@ object PlantTypeRegistry {
         reload()
         sender.sendMessage("§3Plant types reloaded. (${plants.size})")
         true
-    }, onlyOp = true)
+    }, onlyOp = true, minArgs = 0, maxArgs = 0, usage = "/reloadplants")
 
     private fun getPlantDataFolder() : File {
         val folder = plugin.dataFolder.resolve(plantDataFolder.path)

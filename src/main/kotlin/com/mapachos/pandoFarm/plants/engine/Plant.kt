@@ -12,10 +12,9 @@ import com.mapachos.pandoFarm.plants.data.StaticPlantDto
 import com.mapachos.pandoFarm.plants.engine.event.plant.InteractPlantEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantGrowEvent
 import com.mapachos.pandoFarm.plants.engine.event.plant.PlantSpawnEvent
+import kr.toxicity.model.api.tracker.TrackerUpdateAction
 import org.bukkit.Location
-import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import java.util.*
@@ -35,6 +34,8 @@ abstract class Plant<E: Entity>(
 
     lateinit var baseEntity: Entity
 
+    private var held: Boolean = false
+
     val stage: GrowthStage get() = GrowthStage.fromPlant(this)
 
     val modelPreset: ModelPreset<E> get() = modelBatch.getModelForStage(stage,location)
@@ -42,9 +43,17 @@ abstract class Plant<E: Entity>(
     fun spawn(location: Location) {
         // chunk loaded before spawning
         if(!location.chunk.isLoaded) location.chunk.load()
-        model = modelPreset.buildModel(location)
-        startEntity()
+        startModel(location)
         onSpawn()
+    }
+
+    private fun startModel(location: Location) {
+        model = modelPreset.buildModel(location)
+        model.tracker.update(
+            TrackerUpdateAction.viewRange(100f)
+        )
+        held = false
+        startEntity()
     }
 
     private fun startEntity() {
@@ -53,15 +62,15 @@ abstract class Plant<E: Entity>(
         if(baseEntity is LivingEntity) {
             val living = baseEntity as LivingEntity
             living.setAI(false)
+            living.isInvisible = true
         }
-        if(baseEntity is ArmorStand) {
-            (baseEntity as ArmorStand).isMarker = true
+
+        baseEntity.apply {
+            setNoPhysics(true)
+            isPersistent = true
+            isSilent = true
+            isInvulnerable = true
         }
-        baseEntity.setNoPhysics(true)
-        baseEntity.isInvisible = true
-        baseEntity.isPersistent = true
-        baseEntity.isSilent = true
-        baseEntity.isInvulnerable = true
 
         val persistentDataContainer = baseEntity.persistentDataContainer
 
@@ -75,10 +84,9 @@ abstract class Plant<E: Entity>(
         startEntity()
     }
 
-    fun switchModel(){ // for growth stages
+    fun updateModel(){ // for growth stages
         model.remove()
-        model = modelPreset.buildModel(location)
-        startEntity()
+        startModel(location)
     }
 
     fun isMature(): Boolean{
@@ -93,9 +101,40 @@ abstract class Plant<E: Entity>(
         return modelBatch.id
     }
 
-    fun remove(plugin: PandoFarm, save: Boolean = true) {
-        if(save) save(plugin)
-        model.remove()
+    fun holdAndSave(plugin: PandoFarm) {
+        save(plugin)
+        if (!held && this::model.isInitialized) {
+            model.remove()
+            held = true
+        }
+    }
+
+    fun hold(){
+        if (!held && this::model.isInitialized) {
+            model.remove()
+            held = true
+        }
+    }
+
+    fun release(){
+        // Only rebuild visuals if currently held
+        if (held) {
+            startModel(location)
+            held = false
+        }
+    }
+
+    fun hide(player: Player){
+        model.hide(player)
+    }
+
+    fun show(player: Player){
+        model.show(player)
+    }
+
+    fun remove(plugin: PandoFarm) {
+        hold()
+        plugin.getGlobalPlantRegistry().removePlant(this)
     }
 
     fun onSpawn(){
@@ -109,7 +148,7 @@ abstract class Plant<E: Entity>(
      */
     fun grow(){
         PlantGrowEvent(this).callEvent()
-        switchModel()
+        updateModel()
     }
 
     open fun harvest(player: Player){}

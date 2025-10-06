@@ -1,6 +1,7 @@
 package com.mapachos.pandoFarm.market.engine
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.util.config.ConfigPath
 
 object FarmMarketManager {
 
@@ -43,8 +44,8 @@ object FarmMarketManager {
     }
 
     fun reloadDemand(plugin: PandoFarm){
-        val minMult = plugin.config.getDouble("market.demand.min-multiplier", 0.5)
-        val maxMult = plugin.config.getDouble("market.demand.max-multiplier", 2.0)
+        val minMult = plugin.config.getDouble(ConfigPath.MARKET_DEMAND_MIN_MULTIPLIER.path, 0.5)
+        val maxMult = plugin.config.getDouble(ConfigPath.MARKET_DEMAND_MAX_MULTIPLIER.path, 2.0)
         markets.forEach { it.recalculateDemandAdjustments(minMult, maxMult) }
 
     }

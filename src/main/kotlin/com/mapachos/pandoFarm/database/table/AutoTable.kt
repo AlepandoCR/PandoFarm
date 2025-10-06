@@ -122,6 +122,18 @@ abstract class AutoTable<T : Any>(
         return queryList(sql)
     }
 
+    fun deleteById(id: Any) {
+        val sql = "DELETE FROM `$tableName` WHERE `$primaryKey` = ?;"
+        async {
+            mysqlManager.withConnection { conn ->
+                conn.prepareStatement(sql).use { st ->
+                    st.setObject(1, if (id is UUID) id.toString() else id)
+                    st.executeUpdate()
+                }
+            }
+        }
+    }
+
     private fun queryList(sql: String): List<T> {
         val results = mutableListOf<T>()
         return mysqlManager.withConnection { conn ->
