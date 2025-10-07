@@ -1,6 +1,7 @@
 package com.mapachos.pandoFarm.player.culling.plant
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.player.culling.LookDirection.Companion.canLook
 import com.mapachos.pandoFarm.player.event.PlayerLookAtPlantEvent
 import com.mapachos.pandoFarm.player.event.PlayerStopLookingPlantEvent
 import com.mapachos.pandoFarm.util.timer
@@ -51,7 +52,7 @@ class PlayerPlantLookEngine(
             if (distSq > scanRadius * scanRadius) return@forEach
 
             if (player.hasLineOfSight(plant.location)) {
-                nowVisible.add(plant.uniqueIdentifier)
+                if(player.canLook(plant.baseEntity)) nowVisible.add(plant.uniqueIdentifier)
             }
         }
 
