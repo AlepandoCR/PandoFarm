@@ -1,7 +1,7 @@
-package com.mapachos.pandoFarm.market.engine
+package com.mapachos.pandoFarm.economy.market.engine
 
 import com.mapachos.pandoFarm.PandoFarm
-import com.mapachos.pandoFarm.market.event.FarmSaleEvent
+import com.mapachos.pandoFarm.economy.market.event.FarmSaleEvent
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
 import org.bukkit.entity.Player
 import kotlin.math.max
@@ -26,7 +26,6 @@ class FarmMarket(val plugin: PandoFarm, val marketType: MarketType) {
         demandCounter[typeName] = (demandCounter[typeName] ?: 0.0) + amount
         // fire event
         FarmSaleEvent(player, sale).callEvent()
-
 
         return sale
     }

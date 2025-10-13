@@ -1,4 +1,4 @@
-package com.mapachos.pandoFarm.market.engine
+package com.mapachos.pandoFarm.economy.market.engine
 
 import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.util.config.ConfigPath

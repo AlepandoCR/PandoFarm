@@ -1,6 +1,6 @@
-package com.mapachos.pandoFarm.market.engine
+package com.mapachos.pandoFarm.economy.market.engine
 
-import com.mapachos.pandoFarm.market.data.SaleDto
+import com.mapachos.pandoFarm.economy.market.data.SaleDto
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
 import java.util.*
 

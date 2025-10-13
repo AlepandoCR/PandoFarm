@@ -1,6 +1,6 @@
-package com.mapachos.pandoFarm.market.event
+package com.mapachos.pandoFarm.economy.market.event
 
-import com.mapachos.pandoFarm.market.engine.Sale
+import com.mapachos.pandoFarm.economy.market.engine.Sale
 import com.mapachos.pandoFarm.plants.engine.event.PlayerFarmEvent
 import org.bukkit.entity.Player
 

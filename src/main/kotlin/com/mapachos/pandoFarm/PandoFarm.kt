@@ -5,7 +5,7 @@ import com.mapachos.pandoFarm.database.table.types.FarmSalesTable
 import com.mapachos.pandoFarm.database.table.types.HarvestPlantTable
 import com.mapachos.pandoFarm.database.table.types.PlayerDataTable
 import com.mapachos.pandoFarm.database.table.types.StaticPlantTable
-import com.mapachos.pandoFarm.market.engine.FarmMarketManager
+import com.mapachos.pandoFarm.economy.market.engine.FarmMarketManager
 import com.mapachos.pandoFarm.model.util.ModelManager
 import com.mapachos.pandoFarm.plants.engine.PlantTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.command.TestPlantsCommand
@@ -20,6 +20,7 @@ import com.mapachos.pandoFarm.player.culling.plant.PlayerPlantLookManager
 import com.mapachos.pandoFarm.player.culling.plant.listener.PlantCullingListener
 import com.mapachos.pandoFarm.player.management.PlayerDataManager
 import com.mapachos.pandoFarm.util.config.ConfigPath
+import com.mapachos.pandoFarm.economy.EconomyController
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -80,6 +81,7 @@ class PandoFarm : JavaPlugin() {
         PlayerDataManager.start(this)
         FarmMarketManager.loadAllMarkets(this)
         PlayerPlantLookManager.start(this)
+        EconomyController.start(this)
     }
 
     private fun startRegistries() {

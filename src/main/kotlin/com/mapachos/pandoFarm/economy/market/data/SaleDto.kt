@@ -1,8 +1,8 @@
-package com.mapachos.pandoFarm.market.data
+package com.mapachos.pandoFarm.economy.market.data
 
 import com.mapachos.pandoFarm.database.data.Dto
-import com.mapachos.pandoFarm.market.engine.MarketType
-import com.mapachos.pandoFarm.market.engine.Sale
+import com.mapachos.pandoFarm.economy.market.engine.MarketType
+import com.mapachos.pandoFarm.economy.market.engine.Sale
 import com.mapachos.pandoFarm.plants.engine.harvest.data.HarvestDto
 import java.util.*
 

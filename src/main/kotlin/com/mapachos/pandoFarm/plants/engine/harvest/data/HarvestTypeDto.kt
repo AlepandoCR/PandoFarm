@@ -4,6 +4,7 @@ import com.mapachos.pandoFarm.database.data.ContainerDto
 import com.mapachos.pandoFarm.database.data.persistance.DataNamespacedKey
 import com.mapachos.pandoFarm.plants.engine.harvest.HarvestType
 import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
@@ -40,5 +41,14 @@ data class HarvestTypeDto(
             if (type == null || effect == null || customModelComponentString == null || material == null) return null
             return HarvestTypeDto(type, effect, customModelComponentString, material)
         }
+
+        fun ItemStack.getHarvestType(): HarvestType? {
+            return fromPersistentDataContainer(this.itemMeta.persistentDataContainer)?.toHarvestType()
+        }
+
+        fun ItemStack.isHarvestType(): Boolean {
+            return fromPersistentDataContainer(this.itemMeta.persistentDataContainer) != null
+        }
+
     }
 }
