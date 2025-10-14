@@ -1,8 +1,11 @@
 package com.mapachos.pandoFarm.economy.market.engine
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.economy.EconomyController
 import com.mapachos.pandoFarm.economy.market.event.FarmSaleEvent
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
+import com.mapachos.pandoFarm.plants.engine.harvest.HarvestType
+import com.mapachos.pandoFarm.util.config.ConfigPath
 import org.bukkit.entity.Player
 import kotlin.math.max
 import kotlin.math.min
@@ -14,7 +17,9 @@ class FarmMarket(val plugin: PandoFarm, val marketType: MarketType) {
     private val demandCounter = mutableMapOf<String, Double>() // harvestTypeName -> amount
     private val priceMultipliers = mutableMapOf<String, Double>()
 
-    fun addSale(player: Player, harvest: Harvest, amount: Double, unitBasePrice: Long): Sale {
+    val basePrice = plugin.config.getLong(ConfigPath.HARVEST_BASE_PRICE.path)
+
+    fun addSale(player: Player, harvest: Harvest, amount: Double, unitBasePrice: Long = basePrice): Sale {
         val totalPriceRaw = unitBasePrice * amount
         val safePrice = if(totalPriceRaw > Long.MAX_VALUE) Long.MAX_VALUE else totalPriceRaw.toLong()
         val sale = Sale(player.uniqueId, harvest, safePrice, amount, marketType)
@@ -24,8 +29,9 @@ class FarmMarket(val plugin: PandoFarm, val marketType: MarketType) {
         // update demand
         val typeName = harvest.harvestType.name
         demandCounter[typeName] = (demandCounter[typeName] ?: 0.0) + amount
-        // fire event
-        FarmSaleEvent(player, sale).callEvent()
+
+        sale.perform(player)
+
 
         return sale
     }
@@ -51,6 +57,10 @@ class FarmMarket(val plugin: PandoFarm, val marketType: MarketType) {
             adjusted < 0 -> 0
             else -> adjusted
         }
+    }
+
+    fun getPrice(harestType: HarvestType): Long {
+        return getDynamicUnitPrice(basePrice, harestType.name)
     }
 
     companion object{

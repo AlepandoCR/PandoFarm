@@ -21,6 +21,7 @@ import com.mapachos.pandoFarm.player.culling.plant.listener.PlantCullingListener
 import com.mapachos.pandoFarm.player.management.PlayerDataManager
 import com.mapachos.pandoFarm.util.config.ConfigPath
 import com.mapachos.pandoFarm.economy.EconomyController
+import com.mapachos.pandoFarm.plants.engine.harvest.command.HarvestCommand
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -122,6 +123,7 @@ class PandoFarm : JavaPlugin() {
 
     private fun registerCommands(){
         registerCommand("seed", SeedCommand())
+        registerCommand("harvest", HarvestCommand())
         registerCommand("testplants", TestPlantsCommand.getCommand())
     }
 

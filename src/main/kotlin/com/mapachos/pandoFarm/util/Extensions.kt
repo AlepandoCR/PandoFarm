@@ -3,6 +3,9 @@ package com.mapachos.pandoFarm.util
 
 import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.database.data.LocationDto.Companion.toDto
+import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
+import com.mapachos.pandoFarm.plants.engine.harvest.HarvestType
+import com.mapachos.pandoFarm.plants.engine.harvest.data.HarvestDto
 import com.mapachos.pandoFarm.player.data.PlayerDto
 import com.mapachos.pandoFarm.player.management.PlayerDataManager
 import com.mapachos.pandoFarm.util.command.AutoCommand
@@ -18,6 +21,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
@@ -25,6 +29,46 @@ import org.bukkit.scheduler.BukkitTask
 import java.io.Serializable
 
 private val plugin = PandoFarm.getInstance()
+
+fun Player.hasSpaceInInventory(): Boolean{
+    return this.inventory.firstEmpty() != -1
+}
+
+fun Player.giveItem(item: ItemStack, amount: Int = 1){
+    item.amount = amount
+    if(this.hasSpaceInInventory()){
+        this.inventory.addItem(item)
+    } else {
+        this.world.dropItemNaturally(this.location,item)
+    }
+}
+
+fun Player.hasHarvestAmount(amount: Int, type: HarvestType): Boolean {
+    val total = this.getHarvestsByType(type).size
+    return total >= amount
+}
+
+fun Player.tryExtractingHarvest(amount: Int, type: HarvestType): Boolean {
+    if(!this.hasHarvestAmount(amount, type)) return false
+
+    inventory.removeItem(*this.getHarvestsByType(type).keys.take(amount).toTypedArray())
+    return true
+}
+
+fun Player.getHarvestsByType(type: HarvestType): Map<ItemStack, Harvest> {
+    return this.getHarvests().filter { it.value.harvestType == type }
+}
+
+fun Player.getHarvests(): Map<ItemStack, Harvest> {
+    return this.inventory.contents.filterNotNull()
+        .mapNotNull { item ->
+            val itemMeta = item.itemMeta ?: return@mapNotNull null
+            val harvestDto = HarvestDto.fromPersistentDataContainer(itemMeta.persistentDataContainer) ?: return@mapNotNull null
+            val harvest = harvestDto.toHarvest()
+            item to harvest
+        }
+        .toMap()
+}
 
 fun Location.hasPlant(plugin: PandoFarm): Boolean{
     return plugin.getGlobalPlantRegistry().getAllPlants().any { it.location.toDto() == this.toDto() }

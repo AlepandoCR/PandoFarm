@@ -1,7 +1,10 @@
 package com.mapachos.pandoFarm.economy.market.engine
 
+import com.mapachos.pandoFarm.economy.EconomyController
 import com.mapachos.pandoFarm.economy.market.data.SaleDto
+import com.mapachos.pandoFarm.economy.market.event.FarmSaleEvent
 import com.mapachos.pandoFarm.plants.engine.harvest.Harvest
+import org.bukkit.entity.Player
 import java.util.*
 
 data class Sale(
@@ -19,6 +22,13 @@ data class Sale(
     fun pricePerUnit(): Double = if (amount <= 0.0) 0.0 else price.toDouble() / amount
 
     fun toDto(): SaleDto = SaleDto(player, amount, price, harvest.toDto(), marketType.name)
+
+    fun perform(player: Player) {
+
+        EconomyController.deposit(player, amount)
+        // fire event
+        FarmSaleEvent(player, this).callEvent()
+    }
 
     companion object {
         fun load(dto: SaleDto): Sale {

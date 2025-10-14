@@ -1,8 +1,10 @@
 package com.mapachos.pandoFarm.plants.engine.command
 
 import com.mapachos.pandoFarm.PandoFarm
+import com.mapachos.pandoFarm.economy.market.ui.MarketMenu
 import com.mapachos.pandoFarm.plants.engine.PlantTypeRegistry
 import com.mapachos.pandoFarm.plants.engine.StaticPlant
+import com.mapachos.pandoFarm.plants.engine.harvest.HarvestTypeRegistry
 import com.mapachos.pandoFarm.util.autoCommand
 import org.bukkit.Location
 import org.bukkit.command.CommandExecutor
@@ -22,6 +24,17 @@ object TestPlantsCommand {
 
             val plugin = PandoFarm.getInstance()
             val registry = plugin.getGlobalPlantRegistry()
+
+            if (args.size == 1 && args[0].equals("market", ignoreCase = true)) {
+                val harvest = HarvestTypeRegistry.harvests.firstOrNull()
+                if (harvest == null) {
+                    sender.sendMessage("No hay tipos de cosecha (harvest) cargados.")
+                    return@autoCommand true
+                }
+                val menu = MarketMenu(sender, harvest, plugin)
+                sender.showDialog(menu.mainMenuDialog)
+                return@autoCommand true
+            }
 
             // Subcomando: eliminar todas las plantas del mundo actual (físicas + DB)
             if (args.size == 1 && args[0].equals("deleteall", ignoreCase = true)) {
@@ -111,10 +124,10 @@ object TestPlantsCommand {
             sender.sendMessage("Generadas $placed plantas de tipo ${type.name} en ${fullLayers + if (remainder > 0) 1 else 0} capa(s).")
             true
         },
-        completions = listOf("deleteall"),
+        completions = listOf("deleteall", "market"),
         onlyOp = true,
         minArgs = 1,
         maxArgs = 1,
-        usage = "/testplants <cantidad|deleteall>"
+        usage = "/testplants <cantidad|deleteall|market>"
     )
 }

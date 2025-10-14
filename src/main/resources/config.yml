@@ -14,6 +14,7 @@ market:
   demand:
     min-multiplier: 0.5          # Floor multiplier for underperforming items
     max-multiplier: 2.0          # Ceiling multiplier for low supply items
+    harvest-base-price: 100.0    # Base price for harvested items
 
 # Player look engine configuration (PlantCullingEngine)
 look:

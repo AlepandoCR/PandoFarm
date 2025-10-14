@@ -3,6 +3,7 @@ package com.mapachos.pandoFarm.plants.engine
 import com.mapachos.pandoFarm.PandoFarm
 import com.mapachos.pandoFarm.plants.PlantType
 import com.mapachos.pandoFarm.plants.data.PlantTypeDto
+import com.mapachos.pandoFarm.plants.engine.harvest.HarvestType
 import com.mapachos.pandoFarm.util.autoCommand
 import com.mapachos.pandoFarm.util.autoYml
 import com.mapachos.pandoFarm.util.yml.DataFolder
@@ -31,6 +32,9 @@ object PlantTypeRegistry {
         plants.add(plantType)
         plugin.logger.fine("[PlantTypeRegistry] Registered plant type '${plantType.name}'.")
     }
+
+    fun getPlantTypesByHarvestType(harvestType: HarvestType): List<PlantType<out Entity>> =
+        plants.filter { it.harvestName.equals(harvestType.name,true)}
 
     fun unregisterPlantType(plantType: PlantType<out Entity>) {
         plants.remove(plantType)
@@ -70,6 +74,7 @@ object PlantTypeRegistry {
                 }
                 val type = dto.toPlantType()
                 registerPlantType(type)
+                plugin.logger.info("[PlantTypeRegistry] Loaded plant type '${type.name}' from '$fileName', with HarvestType: ${type.harvestName}.")
                 loaded++
             } catch (ex: Exception){
                 plugin.logger.severe("[PlantTypeRegistry] Failed loading '$fileName': ${ex.message}")

@@ -12,6 +12,7 @@ enum class ConfigPath(val path: String) {
     MARKET_DEMAND_RECALC_PERIOD_TICKS("market.demand.recalc-period-ticks"),
     MARKET_DEMAND_MIN_MULTIPLIER("market.demand.min-multiplier"),
     MARKET_DEMAND_MAX_MULTIPLIER("market.demand.max-multiplier"),
+    HARVEST_BASE_PRICE("market.demand.harvest-base-price"),
 
     // Player look engine
     LOOK_SCAN_RADIUS("look.scan-radius"),
